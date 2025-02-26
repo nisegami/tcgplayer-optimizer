@@ -1,0 +1,36 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.26",
+    "@iconify-json/simple-icons": "^1.2.26",
+    "@nuxt/ui": "3.0.0-alpha.13",
+    "nuxt": "^3.15.4"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.1.0",
+    "eslint": "^9.21.0",
+    "typescript": "^5.7.3"
+  },
+  "overrides": {
+    "tailwindcss": "4.0.9",
+    "@tailwindcss/postcss": "4.0.9",
+    "@tailwindcss/vite": "4.0.9"
+  },
+  "resolutions": {
+    "tailwindcss": "4.0.9",
+    "@tailwindcss/postcss": "4.0.9",
+    "@tailwindcss/vite": "4.0.9"
+  },
+  "packageManager": "pnpm@10.5.1+sha512.c424c076bd25c1a5b188c37bb1ca56cc1e136fbf530d98bcb3289982a08fd25527b8c9c4ec113be5e3393c39af04521dd647bcf1d0801eaf8ac6a7b14da313af"
+}
