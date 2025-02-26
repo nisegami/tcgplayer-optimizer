@@ -17,6 +17,7 @@
     "@iconify-json/simple-icons": "^1.2.26",
     "@nuxt/ui": "3.0.0-alpha.13",
     "@tanstack/vue-query": "^5.66.9",
+    "date-fns": "^4.1.0",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.40.0",
     "drizzle-zod": "^0.7.0",
@@ -32,14 +33,14 @@
     "typescript": "^5.7.3"
   },
   "overrides": {
-    "tailwindcss": "4.0.9",
-    "@tailwindcss/postcss": "4.0.9",
-    "@tailwindcss/vite": "4.0.9"
+    "tailwindcss": "4.0.7",
+    "@tailwindcss/postcss": "4.0.7",
+    "@tailwindcss/vite": "4.0.7"
   },
   "resolutions": {
-    "tailwindcss": "4.0.9",
-    "@tailwindcss/postcss": "4.0.9",
-    "@tailwindcss/vite": "4.0.9"
+    "tailwindcss": "4.0.7",
+    "@tailwindcss/postcss": "4.0.7",
+    "@tailwindcss/vite": "4.0.7"
   },
   "packageManager": "pnpm@10.5.1+sha512.c424c076bd25c1a5b188c37bb1ca56cc1e136fbf530d98bcb3289982a08fd25527b8c9c4ec113be5e3393c39af04521dd647bcf1d0801eaf8ac6a7b14da313af"
 }

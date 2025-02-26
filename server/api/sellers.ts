@@ -4,15 +4,15 @@ function scoreListings(printing: Printing, listings: Listing[]): number {
     return Math.min(listings.reduce((acc, listing) => acc + listing.quantity, 0), printing.desiredQuantity)
 }
 
-function scorePrintings({ printings }: PrintingPlus) {
+function scorePrintings(printings: PrintingWithListings[]) {
     return Math.min(...printings.map(p => scoreListings(p.printing, p.listings)))
 }
 
-function scoreSeller(s: SellersPlus) {
-    return s.cards.reduce((acc, card) => acc + scorePrintings(card), 0)
+function scoreSeller(s: SellerWithCards) {
+    return s.cards.reduce((acc, card) => acc + scorePrintings(card.printings), 0)
 }
 
-function sortSellers(a: SellersPlus, b: SellersPlus) {
+function sortSellers(a: SellerWithCards, b: SellerWithCards) {
     const countA = scoreSeller(a)
     const countB = scoreSeller(b)
 
@@ -73,7 +73,7 @@ export default defineEventHandler(async () => {
         .innerJoin(cards, eq(cards.id, printings.cardId))
         .where(not(sellers.blocked))
 
-    const reduced = rows.reduce<SellersRecord>(
+    const reduced = rows.reduce<SellerRecord>(
         (acc, row) => {
             const seller = row.seller
             const listing = row.listing
@@ -109,7 +109,7 @@ export default defineEventHandler(async () => {
         {},
     )
 
-    const result: SellersArray = Object.values(reduced).map(sellerRecord => ({
+    const result: SellerWithCards[] = Object.values(reduced).map(sellerRecord => ({
         seller: sellerRecord.seller,
         cards: Object.values(sellerRecord.cards).map(cardRecord => ({
             card: cardRecord.card,

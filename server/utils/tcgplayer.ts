@@ -1,6 +1,8 @@
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 
+import { cards, listings, printings, sellers } from '../../shared/utils/schema'
+
 const drizzle = useDrizzle()
 
 const tcgplayerListingSchema = z.object({

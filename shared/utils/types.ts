@@ -21,50 +21,51 @@ export const cardInsertSchema = createInsertSchema(cards)
 export const printingInsertSchema = createInsertSchema(printings)
 export const listingInsertSchema = createInsertSchema(listings)
 
+export const partialPrintingInsertSchema = printingInsertSchema.partial()
+export type PrintingUpdate = z.infer<typeof partialPrintingInsertSchema>
+
 export function takeUniqueOrThrow<T>(values: T[]): T {
     if (values.length !== 1)
         throw new Error('Found non unique or inexistent value')
     return values[0]!
 }
 
-export const listingsRecordSchema = z.object({
+export const printingWithListingRecordsSchema = z.object({
     printing: printingSelectSchema,
     listings: z.record(z.number(), listingSelectSchema),
 })
 
-export const printingsRecordSchema = z.object({
+export const cardWithPrintingRecordsSchema = z.object({
     card: cardSelectSchema,
-    printings: z.record(z.number(), listingsRecordSchema),
+    printings: z.record(z.number(), printingWithListingRecordsSchema),
 })
 
-export const cardsRecordSchema = z.object({
+export const sellerWithCardRecordsSchema = z.object({
     seller: sellerSelectSchema,
-    cards: z.record(z.number(), printingsRecordSchema),
+    cards: z.record(z.number(), cardWithPrintingRecordsSchema),
 })
 
-export const sellersRecordSchema = z.record(z.number(), cardsRecordSchema)
+export const sellerRecordSchema = z.record(z.number(), sellerWithCardRecordsSchema)
+export type SellerRecord = z.infer<typeof sellerRecordSchema>
 
-export const listingsArraySchema = z.object({
+export const printingWithListingsSchema = z.object({
     printing: printingSelectSchema,
     listings: z.array(listingSelectSchema),
 })
 
-export const printingsArraySchema = z.object({
+export const cardWithPrintingsSchema = z.object({
     card: cardSelectSchema,
-    printings: z.array(listingsArraySchema),
+    printings: z.array(printingWithListingsSchema),
 })
 
-export const cardsArraySchema = z.object({
+export const sellerWithCardsSchema = z.object({
     seller: sellerSelectSchema,
-    cards: z.array(printingsArraySchema),
+    cards: z.array(cardWithPrintingsSchema),
 })
 
-export const sellersArraySchema = z.array(cardsArraySchema)
-
-export type SellersRecord = z.infer<typeof sellersRecordSchema>
-export type SellersArray = z.infer<typeof sellersArraySchema>
-export type SellersPlus = z.infer<typeof cardsArraySchema>
-export type PrintingPlus = z.infer<typeof printingsArraySchema>
+export type PrintingWithListings = z.infer<typeof printingWithListingsSchema>
+export type CardWithPrintings = z.infer<typeof cardWithPrintingsSchema>
+export type SellerWithCards = z.infer<typeof sellerWithCardsSchema>
 
 export const conditions = z.enum(conditionEnum.enumValues)
 export type Condition = z.infer<typeof conditions>
