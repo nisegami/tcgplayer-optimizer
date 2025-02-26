@@ -12,9 +12,11 @@
     "lint:fix": "eslint --fix ."
   },
   "dependencies": {
+    "@hebilicious/vue-query-nuxt": "0.3.0",
     "@iconify-json/lucide": "^1.2.26",
     "@iconify-json/simple-icons": "^1.2.26",
     "@nuxt/ui": "3.0.0-alpha.13",
+    "@tanstack/vue-query": "^5.66.9",
     "dotenv": "^16.4.7",
     "drizzle-orm": "^0.40.0",
     "drizzle-zod": "^0.7.0",

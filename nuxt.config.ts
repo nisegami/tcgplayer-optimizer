@@ -4,6 +4,7 @@ export default defineNuxtConfig({
     modules: [
         '@nuxt/ui',
         '@nuxt/eslint',
+        '@hebilicious/vue-query-nuxt',
     ],
     devtools: { enabled: true },
 
