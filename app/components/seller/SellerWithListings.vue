@@ -92,8 +92,8 @@ const columns: TableColumn<ListingRow>[] = [
                         icon="i-lucide-external-link"
                         variant="outline"
                         class="flex-shrink-0"
-                        @click="openOnTCGPlayer()"
                         title="Open seller on TCGPlayer"
+                        @click="openOnTCGPlayer()"
                     />
                 </div>
             </div>

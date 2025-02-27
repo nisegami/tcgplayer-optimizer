@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { differenceInHours, formatDistanceToNow } from 'date-fns'
+import { differenceInHours, formatDistanceToNow } from 'date-fns';
 
 const props = defineProps<{ printing: Printing }>()
 
@@ -114,6 +114,7 @@ watch(maxPrice, async () => {
                 icon="i-lucide-trash"
                 size="xl"
                 variant="outline"
+                color="warning"
                 @click="deleteListing"
             />
             <UTooltip :text="lastScraped(printing)">
