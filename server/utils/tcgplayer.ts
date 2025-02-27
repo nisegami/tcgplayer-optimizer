@@ -138,7 +138,7 @@ async function getTCGPlayerListingsForProduct(productId: number, quantity: numbe
         body: JSON.stringify(body),
     }
 
-    const response = await fetch(url, options)
+    const response = await throttledFetch(url, options)
     const data = await response.json()
     const result = await tcgplayerListingResponseSchema.parseAsync(data)
     const listings = result.results[0].results
@@ -153,7 +153,7 @@ async function getTCGPlayerListingDetailsForProduct(productId: number) {
         headers: { 'content-type': 'application/json' },
     }
 
-    const response = await fetch(url, options)
+    const response = await throttledFetch(url, options)
     const data = await response.json()
     const result = await tcgplayerListingDetailSchema.parseAsync(data)
     return result
@@ -296,6 +296,28 @@ async function storeListingsForPrinting(productListings: TCGPlayerListing[], sel
         .where(eq(printings.id, printing.id))
 
     return insertedListings
+}
+
+// Sleep utility for throttling
+function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+// Throttled fetch wrapper
+let lastRequestTime = 0
+const MIN_REQUEST_INTERVAL = 250 // 250ms between requests
+
+async function throttledFetch(url: string, options: RequestInit): Promise<Response> {
+    const now = Date.now()
+    const timeElapsed = now - lastRequestTime
+
+    if (timeElapsed < MIN_REQUEST_INTERVAL) {
+        const delay = MIN_REQUEST_INTERVAL - timeElapsed
+        await sleep(delay)
+    }
+
+    lastRequestTime = Date.now()
+    return fetch(url, options)
 }
 
 export function useScraper() {

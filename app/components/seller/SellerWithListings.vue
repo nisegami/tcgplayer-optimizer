@@ -79,12 +79,23 @@ const columns: TableColumn<ListingRow>[] = [
         <template #header>
             <div class="flex flex-row justify-center w-full items-center space-x-5">
                 <div>{{ seller.name }}</div>
-                <UButton
-                    icon="i-lucide-external-link"
-                    variant="outline"
-                    class="flex-shrink-0"
-                    @click="openOnTCGPlayer()"
-                />
+                <div class="flex space-x-2">
+                    <UButton
+                        icon="i-lucide-list"
+                        variant="outline"
+                        color="primary"
+                        class="flex-shrink-0"
+                        :to="`/seller/${seller.id}`"
+                        title="View all listings including hidden ones"
+                    />
+                    <UButton
+                        icon="i-lucide-external-link"
+                        variant="outline"
+                        class="flex-shrink-0"
+                        @click="openOnTCGPlayer()"
+                        title="Open seller on TCGPlayer"
+                    />
+                </div>
             </div>
         </template>
         <UTable

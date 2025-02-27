@@ -2,7 +2,7 @@ import { boolean, integer, pgEnum, pgTable, real, serial, text, timestamp } from
 
 export const conditionEnum = pgEnum('condition', ['NEAR MINT', 'LIGHTLY PLAYED', 'MODERATELY PLAYED', 'HEAVILY PLAYED', 'DAMAGED'])
 export const editionEnum = pgEnum('edition', ['ANY', '1ST EDITION', 'LIMITED', 'UNLIMITED'])
-export const priorityEnum = pgEnum('priority', ['DISABLED', 'ENABLED', 'PRIORITY', 'FORCE'])
+export const priorityEnum = pgEnum('priority', ['DISABLED', 'HIDE', 'ENABLED', 'PRIORITY', 'FORCE'])
 
 export const sellers = pgTable('sellers', {
     id: serial('id').primaryKey(),
