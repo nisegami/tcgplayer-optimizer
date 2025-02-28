@@ -18,7 +18,7 @@ This project solves a niche problem for a specific group of users. Those users a
 - **Naming**: camelCase for variables/properties, PascalCase for components
 - **Vue Components**: Use `<script lang="ts" setup>` pattern
 - **Error Handling**: Use try/catch with specific error typing (`error instanceof Error`)
-- **Types**: Use TypeScript throughout and drizzle-zod for schema validation
+- **Types**: Use TypeScript throughout and zod for schema validation
 - **Imports**: Group imports by external/internal, no unused imports
 
 ## Libraries
@@ -29,6 +29,63 @@ The following libraries are used in the project:
 - TailwindCSS 4
 - Drizzle ORM
 - date-fns
+
+
+
+## UI Components
+
+We are using the new, alpha version of Nuxt UI. I have included the documentation of this version in the nuxt-ui-v3-docs folder. Each file corresponds to a different component.
+The following components are available:
+- accordion
+- alert
+- app
+- avatar-group
+- avatar
+- badge
+- breadcrumb
+- button-group
+- button
+- calendar
+- card
+- carousel
+- checkbox
+- chip
+- collapsible
+- color-picker
+- command-palette
+- container
+- context-menu
+- drawer
+- dropdown-menu
+- form-field
+- form
+- icon
+- input
+- input-menu
+- input-number
+- kbd
+- link
+- modal
+- navigation-menu
+- pagination
+- pin-input
+- popover
+- progress
+- radio-group
+- select
+- select-menu
+- separator
+- skeleton
+- slideover
+- slider
+- stepper
+- switch
+- table
+- tabs
+- textarea
+- toast
+- tooltip
+- tree
 
 ## API Structure
 - RESTful endpoints in `server/api/`

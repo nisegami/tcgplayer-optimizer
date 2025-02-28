@@ -39,9 +39,14 @@ async function refreshListings() {
         method: 'POST',
         body,
     })
+    
+    const goodDealMessage = result.goodDealPrice 
+        ? ` Good deal price: ${formatPrice(result.goodDealPrice)}`
+        : '';
+        
     toast.add({
         title: `Scraped ${result.cardName} (${result.setCode})`,
-        description: `Found ${result.numberOfListings} listings and ${result.numberOfSales || 0} sales`,
+        description: `Found ${result.numberOfListings} listings and ${result.numberOfSales || 0} sales.${goodDealMessage}`,
     })
     queryClient.invalidateQueries({ queryKey: ['sellers'] })
 }
@@ -78,8 +83,14 @@ watch(maxPrice, async () => {
 
 <template>
     <div class="grid grid-cols-12 gap-2 rounded-lg border border-neutral-300 dark:border-neutral-600 p-3 relative">
-        <div class="col-span-12 text-center py-1">
-            {{ printing.rarity }} - {{ printing.setCode }}
+        <div class="col-span-12 flex flex-col items-center py-1">
+            <div>{{ printing.rarity }} - {{ printing.setCode }}</div>
+            <div class="flex items-center space-x-2">
+                <span>Market Price: {{ formatPrice(printing.marketPrice) }}</span>
+                <span v-if="printing.goodDealPrice" class="text-success font-bold">
+                    Good Deal: {{ formatPrice(printing.goodDealPrice) }}
+                </span>
+            </div>
         </div>
 
         <div class="col-span-12 xl:col-span-4 flex space-x-2 items-center">

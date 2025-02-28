@@ -40,6 +40,7 @@ export const printings = pgTable('printings', {
     desiredCondition: conditionEnum('desired_condition').notNull().default('MODERATELY PLAYED'),
     lastScraped: timestamp('last_scraped'),
     salesLastScraped: timestamp('sales_last_scraped'),
+    goodDealPrice: real('good_deal_price'),
 })
 
 export const listings = pgTable('listings', {

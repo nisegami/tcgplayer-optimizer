@@ -84,8 +84,11 @@ onServerPrefetch(suspense)
                         {{ response?.printing?.setCode }} · {{ response?.printing?.rarity }}
                     </div>
 
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
                         <span>Market Price: {{ formatPrice(response?.printing?.marketPrice) }}</span>
+                        <span v-if="response?.printing?.goodDealPrice" class="font-medium text-success">
+                            Good Deal Price: {{ formatPrice(response?.printing?.goodDealPrice) }}
+                        </span>
                         <NuxtLink
                             :to="`/printing/${printingId}`"
                             class="text-primary"

@@ -19,20 +19,26 @@ interface ListingRow {
     price: string
     shipping: string
     total: string
+    _isGoodDeal?: boolean
 }
 
 const data = computed(() => {
-    return response.value?.listings.flatMap(listing =>
-        ({
+    return response.value?.listings.flatMap(listing => {
+        const totalPrice = listing.price + (listing.seller?.shipping ?? 0);
+        const isGoodDeal = response.value?.printing?.goodDealPrice && 
+            totalPrice <= response.value?.printing?.goodDealPrice;
+            
+        return {
             seller: listing.seller?.name ?? '???',
             condition: listing.condition,
             edition: listing.edition,
             quantity: listing.quantity,
             price: formatPrice(listing.price),
             shipping: formatPrice(listing.seller?.shipping ?? 0),
-            total: formatPrice(listing.price + (listing.seller?.shipping ?? 0)),
-        }),
-    ) ?? [] as ListingRow[]
+            total: formatPrice(totalPrice),
+            _isGoodDeal: isGoodDeal, // Used for row styling
+        };
+    }) ?? [] as ListingRow[]
 })
 
 const columns: TableColumn<ListingRow>[] = [
@@ -96,8 +102,11 @@ onServerPrefetch(suspense)
                         {{ response?.printing?.setCode }} · {{ response?.printing?.rarity }}
                     </div>
 
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
                         <span>Market Price: {{ formatPrice(response?.printing?.marketPrice) }}</span>
+                        <span v-if="response?.printing?.goodDealPrice" class="font-medium text-success">
+                            Good Deal Price: {{ formatPrice(response?.printing?.goodDealPrice) }}
+                        </span>
                         <NuxtLink
                             :to="`/printing/${printingId}/sales`"
                             class="text-primary flex items-center gap-1"
@@ -122,7 +131,17 @@ onServerPrefetch(suspense)
                         <UTable
                             :data
                             :columns
+                            :row-class="(row) => row._isGoodDeal ? 'bg-green-100 dark:bg-green-950' : ''"
                         />
+                    </div>
+                    
+                    <div v-if="response?.printing?.goodDealPrice" class="pt-4 text-sm text-gray-600 dark:text-gray-300">
+                        <div class="flex items-center gap-1">
+                            <UIcon name="i-lucide-tag" class="text-success" />
+                            <span class="font-medium">Good Deal Price:</span>
+                            <span class="text-success font-bold">{{ formatPrice(response.printing.goodDealPrice) }}</span>
+                            <span>— listings highlighted in green are good deals!</span>
+                        </div>
                     </div>
 
                     <template v-if="!response?.listings?.length">
