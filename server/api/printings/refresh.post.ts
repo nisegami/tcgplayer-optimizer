@@ -2,9 +2,9 @@ import { and, eq, isNull, lt, or } from 'drizzle-orm'
 
 export default defineEventHandler(async () => {
     const db = useDrizzle()
-    const { scrapeListing } = useScraper()
+    const { scrapeAll } = useScraper()
 
-    const twentyFourHoursAgo = new Date(Date.now() - 1 * 60 * 60 * 1000)
+    const oneHourAgo = new Date(Date.now() - 1 * 60 * 60 * 1000)
 
     const eligiblePrintings = await db.select()
         .from(printings)
@@ -16,7 +16,7 @@ export default defineEventHandler(async () => {
                 eq(printings.priority, 'HIDE'),
             ),
             or(
-                lt(printings.lastScraped, twentyFourHoursAgo),
+                lt(printings.lastScraped, oneHourAgo),
                 isNull(printings.lastScraped),
             ),
         ))
@@ -34,7 +34,7 @@ export default defineEventHandler(async () => {
 
         try {
             console.log(`[${progress}%] Processing ${i + 1}/${totalPrintings}: Item #${printing.itemNo}`)
-            const result = await scrapeListing(printing.itemNo, 50)
+            const result = await scrapeAll(printing.itemNo, 50, 100)
             results.push({
                 itemNo: printing.itemNo,
                 ...result,

@@ -39,6 +39,7 @@ export const printings = pgTable('printings', {
     desiredEdition: editionEnum('desired_edition').notNull().default('ANY'),
     desiredCondition: conditionEnum('desired_condition').notNull().default('MODERATELY PLAYED'),
     lastScraped: timestamp('last_scraped'),
+    salesLastScraped: timestamp('sales_last_scraped'),
 })
 
 export const listings = pgTable('listings', {
@@ -50,4 +51,15 @@ export const listings = pgTable('listings', {
     edition: editionEnum('edition').notNull(),
     printingId: integer('printing_id').references(() => printings.id).notNull(),
     sellerId: integer('seller_id').references(() => sellers.id).notNull(),
+})
+
+export const salesHistory = pgTable('sales_history', {
+    id: serial('id').primaryKey(),
+    condition: conditionEnum('condition').notNull(),
+    edition: editionEnum('edition').notNull(),
+    quantity: integer('quantity').notNull(),
+    purchasePrice: real('purchase_price').notNull(),
+    shippingPrice: real('shipping_price').notNull(),
+    orderDate: timestamp('order_date').notNull(),
+    printingId: integer('printing_id').references(() => printings.id).notNull(),
 })

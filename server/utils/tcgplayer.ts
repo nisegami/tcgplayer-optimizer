@@ -1,7 +1,31 @@
+import { parseJSON } from 'date-fns'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
+import { cards, listings, printings, salesHistory, sellers } from '../../shared/utils/schema'
 
-import { cards, listings, printings, sellers } from '../../shared/utils/schema'
+let lastRequestTime = 0
+const MIN_REQUEST_INTERVAL = 250 // 250ms between requests
+
+function sleep(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms))
+}
+
+async function throttledFetch(url: string, options: RequestInit): Promise<Response> {
+    const now = Date.now()
+    const timeElapsed = now - lastRequestTime
+
+    if (timeElapsed < MIN_REQUEST_INTERVAL) {
+        const delay = MIN_REQUEST_INTERVAL - timeElapsed
+        await sleep(delay)
+    }
+
+    lastRequestTime = Date.now()
+    return fetch(url, options)
+}
+
+type TCGPlayerListing = z.infer<typeof tcgplayerListingSchema>
+type TCGPlayerDetails = z.infer<typeof tcgplayerListingDetailSchema>
+type TCGPlayerSaleHistory = z.infer<typeof tcgplayerSaleHistorySchema>
 
 const drizzle = useDrizzle()
 
@@ -40,6 +64,27 @@ const tcgplayerListingResponseSchema = z.object({
     results: z.array(z.object({
         results: z.array(tcgplayerListingSchema),
     })),
+})
+
+const tcgplayerSaleHistorySchema = z.object({
+    condition: z.string(),
+    variant: z.string(),
+    language: z.string(),
+    quantity: z.number(),
+    title: z.string(),
+    listingType: z.string(),
+    customListingId: z.string(),
+    purchasePrice: z.number(),
+    shippingPrice: z.number(),
+    orderDate: z.string(),
+})
+
+const tcgplayerSaleHistoryResponseSchema = z.object({
+    previousPage: z.string(),
+    nextPage: z.string().optional(),
+    resultCount: z.number(),
+    totalResults: z.number(),
+    data: z.array(tcgplayerSaleHistorySchema),
 })
 
 const customAttributesSchema = z.object({
@@ -94,9 +139,6 @@ const tcgplayerListingDetailSchema = z.object({
     lowestPrice: z.number(),
     medianPrice: z.number().nullish(),
 })
-
-type TCGPlayerListing = z.infer<typeof tcgplayerListingSchema>
-type TCGPlayerDetails = z.infer<typeof tcgplayerListingDetailSchema>
 
 async function getTCGPlayerListingsForProduct(productId: number, quantity: number) {
     const url = `https://mp-search-api.tcgplayer.com/v1/product/${productId}/listings?mpfev=2144`
@@ -298,26 +340,69 @@ async function storeListingsForPrinting(productListings: TCGPlayerListing[], sel
     return insertedListings
 }
 
-// Sleep utility for throttling
-function sleep(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
+async function getTCGPlayerSalesHistoryForProduct(productId: number, limit: number = 100) {
+    const url = `https://mpapi.tcgplayer.com/v2/product/${productId}/latestsales?mpfev=3297`
 
-// Throttled fetch wrapper
-let lastRequestTime = 0
-const MIN_REQUEST_INTERVAL = 250 // 250ms between requests
-
-async function throttledFetch(url: string, options: RequestInit): Promise<Response> {
-    const now = Date.now()
-    const timeElapsed = now - lastRequestTime
-
-    if (timeElapsed < MIN_REQUEST_INTERVAL) {
-        const delay = MIN_REQUEST_INTERVAL - timeElapsed
-        await sleep(delay)
+    const body = {
+        conditions: [],
+        languages: [1], // English
+        variants: [],
+        listingType: 'ListingWithoutPhotos',
+        limit: limit,
     }
 
-    lastRequestTime = Date.now()
-    return fetch(url, options)
+    const options = {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+    }
+
+    const response = await throttledFetch(url, options)
+    const data = await response.json()
+    const result = await tcgplayerSaleHistoryResponseSchema.parseAsync(data)
+    return result.data
+}
+
+async function clearSalesHistoryForPrinting(printing: Printing) {
+    await drizzle.delete(salesHistory).where(eq(salesHistory.printingId, printing.id))
+}
+
+async function storeSalesHistoryForPrinting(sales: TCGPlayerSaleHistory[], printing: Printing) {
+    const newSalesHistory = sales.map((sale) => {
+        return {
+            condition: sale.condition.toUpperCase() as Condition,
+            edition: mapVariantToEdition(sale.variant) as Edition,
+            quantity: sale.quantity,
+            purchasePrice: sale.purchasePrice,
+            shippingPrice: sale.shippingPrice,
+            orderDate: parseJSON(sale.orderDate),
+            printingId: printing.id,
+        }
+    })
+
+    const insertedSales = await drizzle.insert(salesHistory).values(newSalesHistory).returning()
+
+    await drizzle.update(printings)
+        .set({
+            salesLastScraped: new Date(),
+        })
+        .where(eq(printings.id, printing.id))
+
+    return insertedSales
+}
+
+function mapVariantToEdition(variant: string): Edition {
+    // Map variant names from TCGPlayer to our edition enum values
+    switch (variant.toUpperCase()) {
+        case '1ST EDITION':
+            return '1ST EDITION'
+        case 'UNLIMITED':
+            return 'UNLIMITED'
+        case 'LIMITED':
+            return 'LIMITED'
+        default:
+            return 'ANY'
+    }
 }
 
 export function useScraper() {
@@ -336,10 +421,69 @@ export function useScraper() {
             cardName: card.name,
             setCode: printing.setCode,
             rarity: printing.rarity,
+            numberOfSales: 0,
             numberOfListings: insertedListings.length,
         }
 
         return response
     }
-    return { scrapeListing }
+
+    async function scrapeSalesHistory(productId: number, limit: number | undefined) {
+        const productDetails = await getTCGPlayerListingDetailsForProduct(productId)
+        const salesData = await getTCGPlayerSalesHistoryForProduct(productId, limit ?? 100)
+
+        const card = await getOrInsertCard(productDetails)
+        const printing = await getOrInsertPrinting(card, productDetails)
+
+        await clearSalesHistoryForPrinting(printing)
+        const insertedSales = await storeSalesHistoryForPrinting(salesData, printing)
+
+        const response = {
+            cardName: card.name,
+            setCode: printing.setCode,
+            rarity: printing.rarity,
+            numberOfSales: insertedSales.length,
+            numberOfListings: 0,
+        }
+
+        return response
+    }
+
+    async function scrapeAll(productId: number, listingQuantity: number | undefined, salesLimit: number | undefined) {
+        const productDetails = await getTCGPlayerListingDetailsForProduct(productId)
+
+        // Fetch both listings and sales history in parallel
+        const [productListings, salesData] = await Promise.all([
+            getTCGPlayerListingsForProduct(productId, listingQuantity ?? 50),
+            getTCGPlayerSalesHistoryForProduct(productId, salesLimit ?? 100),
+        ])
+
+        const sellerMap = await getAndUpdateSellerMap(productListings)
+        const card = await getOrInsertCard(productDetails)
+        const printing = await getOrInsertPrinting(card, productDetails)
+
+        // Clear and store listings
+        await clearListingsForPrinting(printing)
+        const insertedListings = await storeListingsForPrinting(productListings, sellerMap, printing)
+
+        // Clear and store sales history
+        await clearSalesHistoryForPrinting(printing)
+        const insertedSales = await storeSalesHistoryForPrinting(salesData, printing)
+
+        const response = {
+            cardName: card.name,
+            setCode: printing.setCode,
+            rarity: printing.rarity,
+            numberOfListings: insertedListings.length,
+            numberOfSales: insertedSales.length,
+        }
+
+        return response
+    }
+
+    return {
+        scrapeListing,
+        scrapeSalesHistory,
+        scrapeAll,
+    }
 }

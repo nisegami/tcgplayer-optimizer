@@ -1,14 +1,19 @@
 import { and, eq, not } from 'drizzle-orm'
 import { z } from 'zod'
 
-export default defineEventHandler(async (event) => {
-    const sellerId = getRouterParam(event, 'seller_id')
-    if (!sellerId)
-        throw createError({ statusCode: 400, message: 'Seller ID is required' })
+type ListingsAccumulator = Record<number, {
+    card: Card
+    printings: Record<number, {
+        printing: Printing
+        listings: Listing[]
+    }>
+}>
 
-    const parsedId = z.coerce.number().safeParse(sellerId)
-    if (!parsedId.success)
-        throw createError({ statusCode: 400, message: 'Invalid seller ID format' })
+export default defineEventHandler(async (event) => {
+    const schema = z.object({
+        id: z.coerce.number(),
+    })
+    const params = await getValidatedRouterParams(event, schema.parseAsync)
 
     const db = useDrizzle()
 
@@ -25,7 +30,7 @@ export default defineEventHandler(async (event) => {
         .innerJoin(cards, eq(cards.id, printings.cardId))
         .where(
             and(
-                eq(sellers.id, parsedId.data),
+                eq(sellers.id, params.id),
                 not(eq(printings.priority, 'DISABLED')),
             ),
         )
@@ -57,7 +62,7 @@ export default defineEventHandler(async (event) => {
         acc[cardId].printings[printingId].listings.push(row.listing)
 
         return acc
-    }, {})
+    }, {} as ListingsAccumulator)
 
     // Convert to array format
     const formattedResult = {

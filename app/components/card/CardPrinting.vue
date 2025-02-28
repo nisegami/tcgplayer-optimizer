@@ -16,24 +16,32 @@ async function modifyPrinting(body: PrintingUpdate) {
         body,
     })
     queryClient.invalidateQueries({ queryKey: ['sellers'] })
+    queryClient.invalidateQueries({ queryKey: ['cards'] })
 }
 
 async function deleteListing() {
-    await $fetch(`/api/listings/${props.printing.id}`, {
+    await $fetch(`/api/printings/${props.printing.id}`, {
         method: 'DELETE',
     })
     queryClient.invalidateQueries({ queryKey: ['sellers'] })
+    queryClient.invalidateQueries({ queryKey: ['cards'] })
 }
 
 async function refreshListings() {
-    const body = { product_id: props.printing.itemNo }
+    const body = {
+        productId: props.printing.itemNo,
+        includeListings: true,
+        includeSales: true,
+        listingCount: 50,
+        salesCount: 100,
+    }
     const result = await $fetch('/api/scrape', {
         method: 'POST',
         body,
     })
     toast.add({
         title: `Scraped ${result.cardName} (${result.setCode})`,
-        description: `Found ${result.numberOfListings} listings`,
+        description: `Found ${result.numberOfListings} listings and ${result.numberOfSales || 0} sales`,
     })
     queryClient.invalidateQueries({ queryKey: ['sellers'] })
 }
@@ -69,47 +77,47 @@ watch(maxPrice, async () => {
 </script>
 
 <template>
-    <div class="grid grid-cols-2 2xl:grid-cols-3 gap-2 rounded-lg border border-neutral-300 dark:border-neutral-600 p-3 relative">
-        <div class="col-span-2 2xl:col-span-3 text-center py-1">
+    <div class="grid grid-cols-12 gap-2 rounded-lg border border-neutral-300 dark:border-neutral-600 p-3 relative">
+        <div class="col-span-12 text-center py-1">
             {{ printing.rarity }} - {{ printing.setCode }}
         </div>
 
-        <div class="col-span-2 xl:col-span-1 flex space-x-2 items-center">
+        <div class="col-span-12 xl:col-span-4 flex space-x-2 items-center">
             <USelect
                 v-model="desiredCondition"
                 :items="conditionValues"
                 class="w-full"
             />
         </div>
-        <div class="col-span-1 flex space-x-2 items-center">
+        <div class="col-span-6 xl:col-span-4 flex space-x-2 items-center">
             <USelect
                 v-model="priority"
                 :items="priorityValues"
                 class="w-full"
             />
         </div>
-        <div class="col-span-1 flex space-x-2 items-center">
+        <div class="col-span-6 xl:col-span-4 flex space-x-2 items-center">
             <USelect
                 v-model="desiredEdition"
                 :items="editionValues"
                 class="w-full"
             />
         </div>
-        <div class="col-span-1 flex space-x-2 items-center">
+        <div class="col-span-6 xl:col-span-3 flex space-x-2 items-center">
             <USelect
                 v-model="desiredQuantity"
                 :items="quantityValues"
                 class="w-full"
             />
         </div>
-        <div class="col-span-1 flex space-x-2 items-center">
+        <div class="col-span-6 xl:col-span-3 flex space-x-2 items-center">
             <UInput
                 v-model="maxPrice"
                 icon="i-lucide-dollar-sign"
                 type="number"
             />
         </div>
-        <div class="col-span-2 2xl:col-span-1 flex space-x-2 items-center justify-center">
+        <div class="col-span-12 xl:col-span-6 flex space-x-2 items-center justify-center">
             <UButton
                 icon="i-lucide-trash"
                 size="xl"
@@ -133,6 +141,15 @@ watch(maxPrice, async () => {
                 variant="outline"
                 @click="openOnTCGPlayer()"
             />
+            <UTooltip text="View Sales History">
+                <UButton
+                    icon="i-lucide-history"
+                    size="xl"
+                    color="primary"
+                    variant="outline"
+                    :to="`/printing/${printing.id}/sales`"
+                />
+            </UTooltip>
         </div>
     </div>
 </template>
