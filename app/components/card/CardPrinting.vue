@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { differenceInHours, formatDistanceToNow } from 'date-fns';
+import { differenceInHours, formatDistanceToNow } from 'date-fns'
 
 const props = defineProps<{ printing: Printing }>()
 
@@ -15,16 +15,16 @@ async function modifyPrinting(body: PrintingUpdate) {
         method: 'PUT',
         body,
     })
-    queryClient.invalidateQueries({ queryKey: ['sellers'] })
-    queryClient.invalidateQueries({ queryKey: ['cards'] })
+    queryClient.refetchQueries({ queryKey: ['sellers'] })
+    queryClient.refetchQueries({ queryKey: ['cards'] })
 }
 
 async function deleteListing() {
     await $fetch(`/api/printings/${props.printing.id}`, {
         method: 'DELETE',
     })
-    queryClient.invalidateQueries({ queryKey: ['sellers'] })
-    queryClient.invalidateQueries({ queryKey: ['cards'] })
+    queryClient.refetchQueries({ queryKey: ['sellers'] })
+    queryClient.refetchQueries({ queryKey: ['cards'] })
 }
 
 async function refreshListings() {
@@ -39,16 +39,18 @@ async function refreshListings() {
         method: 'POST',
         body,
     })
-    
-    const goodDealMessage = result.goodDealPrice 
+
+    const goodDealMessage = result.goodDealPrice
         ? ` Good deal price: ${formatPrice(result.goodDealPrice)}`
-        : '';
-        
+        : ''
+
     toast.add({
         title: `Scraped ${result.cardName} (${result.setCode})`,
         description: `Found ${result.numberOfListings} listings and ${result.numberOfSales || 0} sales.${goodDealMessage}`,
     })
-    queryClient.invalidateQueries({ queryKey: ['sellers'] })
+
+    queryClient.refetchQueries({ queryKey: ['sellers'] })
+    queryClient.refetchQueries({ queryKey: ['cards'] })
 }
 
 const priority = ref(props.printing.priority)
@@ -86,8 +88,11 @@ watch(maxPrice, async () => {
         <div class="col-span-12 flex flex-col items-center py-1">
             <div>{{ printing.rarity }} - {{ printing.setCode }}</div>
             <div class="flex items-center space-x-2">
-                <span>Market Price: {{ formatPrice(printing.marketPrice) }}</span>
-                <span v-if="printing.goodDealPrice" class="text-success font-bold">
+                <span class="text-pink-500">Market Price: {{ formatPrice(printing.marketPrice) }}</span>
+                <span
+                    v-if="printing.goodDealPrice"
+                    class="text-green-500"
+                >
                     Good Deal: {{ formatPrice(printing.goodDealPrice) }}
                 </span>
             </div>

@@ -341,7 +341,7 @@ async function storeListingsForPrinting(productListings: TCGPlayerListing[], sel
 }
 
 async function getTCGPlayerSalesHistoryForProduct(productId: number, limit: number = 100) {
-    const url = `https://mpapi.tcgplayer.com/v2/product/${productId}/latestsales?mpfev=3297`
+    const url = `https://mpapi.tcgplayer.com/v2/product/${productId}/latestsales?mpfev=3302`
 
     const body = {
         conditions: [],
@@ -353,7 +353,7 @@ async function getTCGPlayerSalesHistoryForProduct(productId: number, limit: numb
 
     const options = {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: { 'content-type': 'application/json', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36' },
         body: JSON.stringify(body),
     }
 

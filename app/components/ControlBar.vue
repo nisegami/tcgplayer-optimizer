@@ -52,6 +52,9 @@ async function refreshPrintings() {
             color: data.errorCount > 0 ? 'warning' : 'success',
             icon: data.errorCount > 0 ? 'i-lucide-alert-circle' : 'i-lucide-check-circle',
         })
+
+        queryClient.refetchQueries({ queryKey: ['sellers'] })
+        queryClient.refetchQueries({ queryKey: ['cards'] })
     }
     catch (error) {
         console.error('Refresh failed:', error)

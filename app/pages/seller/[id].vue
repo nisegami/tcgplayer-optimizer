@@ -38,42 +38,38 @@ onServerPrefetch(suspense)
             <UCard class="mb-4">
                 <template #header>
                     <div class="flex justify-between items-center">
-                        <h1 class="text-lg font-bold">
+                        <h1 class="text-xl font-bold">
                             {{ data.seller.name }}
                         </h1>
                         <div class="flex gap-1">
                             <UBadge
                                 v-if="data.seller.direct"
                                 color="info"
-                                size="xs"
                             >
                                 Direct
                             </UBadge>
                             <UBadge
                                 v-if="data.seller.gold"
                                 color="secondary"
-                                size="xs"
                             >
                                 Gold
                             </UBadge>
                             <UBadge
                                 v-if="data.seller.verified"
                                 color="success"
-                                size="xs"
                             >
                                 Verified
                             </UBadge>
                             <UBadge
                                 v-if="data.seller.freeShipping"
                                 color="neutral"
-                                size="xs"
                             >
                                 Free Ship
                             </UBadge>
                         </div>
                     </div>
                 </template>
-                <div class="text-xs grid grid-cols-2 gap-1">
+                <div class="grid grid-cols-2 gap-1">
                     <div>Rating: {{ data.seller.rating }}/5</div>
                     <div>Sales: {{ data.seller.numberOfSales }}</div>
                     <div>Shipping: {{ formatPrice(data.seller.shipping) }}</div>
@@ -93,13 +89,11 @@ onServerPrefetch(suspense)
                     :key="card.card.id"
                     #[`card-${card.card.id}`]
                 >
-                    <!-- Printings (non-collapsible) -->
                     <div
                         v-for="printing in card.printings"
                         :key="printing.printing.id"
                         class="mb-4 border-l-2 border-gray-200 dark:border-gray-700 pl-2"
                     >
-                        <!-- Printing header -->
                         <div class="flex items-center mb-2">
                             <span
                                 v-if="printing.printing.priority === 'HIDE'"
@@ -127,7 +121,7 @@ onServerPrefetch(suspense)
                                 Hidden
                             </UBadge>
 
-                            <span class="ml-auto text-xs">
+                            <span class="ml-auto">
                                 <span class="mr-2">Market: {{ formatPrice(printing.printing.marketPrice) }}</span>
                                 <span v-if="printing.printing.maxPrice">Max: {{ formatPrice(printing.printing.maxPrice) }}</span>
                             </span>
@@ -140,7 +134,7 @@ onServerPrefetch(suspense)
                                 :key="listing.id"
                                 class="border border-gray-100 dark:border-gray-800 p-2"
                             >
-                                <div class="grid grid-cols-2 gap-1 text-xs">
+                                <div class="grid grid-cols-2 gap-1">
                                     <div class="font-semibold">
                                         Price:
                                     </div>
@@ -163,7 +157,7 @@ onServerPrefetch(suspense)
 
                         <!-- Desktop Table View -->
                         <div class="hidden md:block pl-2">
-                            <table class="w-full text-xs">
+                            <table class="w-full">
                                 <thead>
                                     <tr class="border-b border-gray-200 dark:border-gray-700">
                                         <th class="py-1 text-left">
