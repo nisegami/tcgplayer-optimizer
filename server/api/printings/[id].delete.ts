@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
     const params = await getValidatedRouterParams(event, schema.parseAsync)
     const drizzle = useDrizzle()
     await drizzle.delete(listings).where(eq(listings.printingId, params.id))
+    await drizzle.delete(salesHistory).where(eq(salesHistory.printingId, params.id))
     const deletedPrintings = await drizzle.delete(printings).where(eq(printings.id, params.id)).returning()
     if (deletedPrintings.length) {
         const cardId = deletedPrintings[0].cardId

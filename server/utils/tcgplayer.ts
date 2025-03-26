@@ -141,7 +141,7 @@ const tcgplayerListingDetailSchema = z.object({
 })
 
 async function getTCGPlayerListingsForProduct(productId: number, quantity: number) {
-    const url = `https://mp-search-api.tcgplayer.com/v1/product/${productId}/listings?mpfev=2144`
+    const url = `https://mp-search-api.tcgplayer.com/v1/product/${productId}/listings?mpfev=3428`
 
     const body = {
         filters: {
@@ -176,7 +176,7 @@ async function getTCGPlayerListingsForProduct(productId: number, quantity: numbe
 
     const options = {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
+        headers: { 'content-type': 'application/json', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36' },
         body: JSON.stringify(body),
     }
 
@@ -188,11 +188,11 @@ async function getTCGPlayerListingsForProduct(productId: number, quantity: numbe
 }
 
 async function getTCGPlayerListingDetailsForProduct(productId: number) {
-    const url = `https://mp-search-api.tcgplayer.com/v1/product/${productId}/details?mpfev=2407`
+    const url = `https://mp-search-api.tcgplayer.com/v1/product/${productId}/details?mpfev=3428`
 
     const options = {
         method: 'GET',
-        headers: { 'content-type': 'application/json' },
+        headers: { 'content-type': 'application/json', 'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36' },
     }
 
     const response = await throttledFetch(url, options)
@@ -341,7 +341,7 @@ async function storeListingsForPrinting(productListings: TCGPlayerListing[], sel
 }
 
 async function getTCGPlayerSalesHistoryForProduct(productId: number, limit: number = 100) {
-    const url = `https://mpapi.tcgplayer.com/v2/product/${productId}/latestsales?mpfev=3302`
+    const url = `https://mpapi.tcgplayer.com/v2/product/${productId}/latestsales?mpfev=3428`
 
     const body = {
         conditions: [],

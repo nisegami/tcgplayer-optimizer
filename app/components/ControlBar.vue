@@ -1,8 +1,10 @@
 <script lang="ts" setup>
+const toast = useToast()
+const queryClient = useQueryClient()
+
 const newProductUrl = ref('')
 const isScraping = ref(false)
 const isRefreshing = ref(false)
-const toast = useToast()
 
 async function handleUrlSubmit() {
     if (!newProductUrl.value)
