@@ -1,19 +1,21 @@
 ---
-title: RadioGroup
-description: A set of radio buttons to select a single option from a list.
+title: CheckboxGroup
+description: A set of checklist buttons to select multiple option from a list.
 category: form
 links:
-  - label: RadioGroup
+  - label: CheckboxGroup
     icon: i-custom-reka-ui
-    to: https://reka-ui.com/docs/components/radio-group
+    to: https://reka-ui.com/docs/components/checkbox#group-root
   - label: GitHub
     icon: i-simple-icons-github
-    to: https://github.com/nuxt/ui/tree/v3/src/runtime/components/RadioGroup.vue
+    to: https://github.com/nuxt/ui/tree/v3/src/runtime/components/CheckboxGroup.vue
+navigation.badge: New
 ---
+
 
 ## Usage
 
-Use the `v-model` directive to control the value of the RadioGroup or the `default-value` prop to set the initial value when you do not need to control its state.
+Use the `v-model` directive to control the value of the CheckboxGroup or the `default-value` prop to set the initial value when you do not need to control its state.
 
 ### Items
 
@@ -29,10 +31,11 @@ external:
   - items
   - modelValue
 externalTypes:
-  - RadioGroupItem[]
-  - RadioGroupValue
+  - CheckboxGroupItem[]
+  - CheckboxGroupValue[]
 props:
-  modelValue: 'System'
+  modelValue:
+    - 'System'
   items:
     - 'System'
     - 'Light'
@@ -56,10 +59,11 @@ external:
   - items
   - modelValue
 externalTypes:
-  - RadioGroupItem[]
-  - RadioGroupValue
+  - CheckboxGroupItem[]
+  - CheckboxGroupValue[]
 props:
-  modelValue: 'system'
+  modelValue:
+    - 'system'
   items:
     - label: 'System'
       description: 'This is the first option.'
@@ -91,10 +95,11 @@ external:
   - items
   - modelValue
 externalTypes:
-  - RadioGroupItem[]
-  - RadioGroupValue
+  - CheckboxGroupItem[]
+  - CheckboxGroupValue[]
 props:
-  modelValue: 'light'
+  modelValue:
+    - 'light'
   valueKey: 'id'
   items:
     - label: 'System'
@@ -111,7 +116,7 @@ props:
 
 ### Legend
 
-Use the `legend` prop to set the legend of the RadioGroup.
+Use the `legend` prop to set the legend of the CheckboxGroup.
 
 ::component-code
 ---
@@ -122,10 +127,11 @@ ignore:
 external:
   - items
 externalTypes:
-  - RadioGroupItem[]
+  - CheckboxGroupItem[]
 props:
   legend: 'Theme'
-  defaultValue: 'System'
+  defaultValue:
+    - 'System'
   items:
     - 'System'
     - 'Light'
@@ -135,7 +141,7 @@ props:
 
 ### Color
 
-Use the `color` prop to change the color of the RadioGroup.
+Use the `color` prop to change the color of the CheckboxGroup.
 
 ::component-code
 ---
@@ -146,10 +152,20 @@ ignore:
 external:
   - items
 externalTypes:
-  - RadioGroupItem[]
+  - CheckboxGroupItem[]
+items:
+  color:
+    - primary
+    - secondary
+    - success
+    - info
+    - warning
+    - error
+    - neutral
 props:
   color: neutral
-  defaultValue: 'System'
+  defaultValue:
+    - 'System'
   items:
     - 'System'
     - 'Light'
@@ -157,9 +173,9 @@ props:
 ---
 ::
 
-### Variant :badge{label="New" class="align-text-top"}
+### Variant
 
-Use the `variant` prop to change the variant of the RadioGroup.
+Use the `variant` prop to change the variant of the CheckboxGroup.
 
 ::component-code
 ---
@@ -170,27 +186,34 @@ ignore:
 external:
   - items
 externalTypes:
-  - RadioGroupItem[]
+  - CheckboxGroupItem[]
+items:
+  color:
+    - primary
+    - secondary
+    - success
+    - info
+    - warning
+    - error
+    - neutral
+  variant:
+    - list
+    - card
 props:
   color: 'primary'
-  variant: 'table'
-  defaultValue: 'pro'
+  variant: 'card'
+  defaultValue:
+    - 'System'
   items:
-    - label: 'Pro'
-      value: 'pro'
-      description: 'Tailored for indie hackers, freelancers and solo founders.'
-    - label: 'Startup'
-      value: 'startup'
-      description: 'Best suited for small teams, startups and agencies.'
-    - label: 'Enterprise'
-      value: 'enterprise'
-      description: 'Ideal for larger teams and organizations.'
+    - 'System'
+    - 'Light'
+    - 'Dark'
 ---
 ::
 
 ### Size
 
-Use the `size` prop to change the size of the RadioGroup.
+Use the `size` prop to change the size of the CheckboxGroup.
 
 ::component-code
 ---
@@ -201,11 +224,16 @@ ignore:
 external:
   - items
 externalTypes:
-  - RadioGroupItem[]
+  - CheckboxGroupItem[]
+items:
+  variant:
+    - list
+    - card
 props:
   size: 'xl'
   variant: 'list'
-  defaultValue: 'System'
+  defaultValue:
+    - 'System'
   items:
     - 'System'
     - 'Light'
@@ -215,7 +243,7 @@ props:
 
 ### Orientation
 
-Use the `orientation` prop to change the orientation of the RadioGroup. Defaults to `vertical`.
+Use the `orientation` prop to change the orientation of the CheckboxGroup. Defaults to `vertical`.
 
 ::component-code
 ---
@@ -226,11 +254,16 @@ ignore:
 external:
   - items
 externalTypes:
-  - RadioGroupItem[]
+  - CheckboxGroupItem[]
+items:
+  variant:
+    - list
+    - card
 props:
   orientation: 'horizontal'
   variant: 'list'
-  defaultValue: 'System'
+  defaultValue:
+    - 'System'
   items:
     - 'System'
     - 'Light'
@@ -238,7 +271,7 @@ props:
 ---
 ::
 
-### Indicator :badge{label="New" class="align-text-top"}
+### Indicator
 
 Use the `indicator` prop to change the position or hide the indicator. Defaults to `start`.
 
@@ -251,11 +284,20 @@ ignore:
 external:
   - items
 externalTypes:
-  - RadioGroupItem[]
+  - CheckboxGroupItem[]
+items:
+  indicator:
+    - start
+    - end
+    - hidden
+  variant:
+    - list
+    - card
 props:
   indicator: 'end'
   variant: 'card'
-  defaultValue: 'System'
+  defaultValue:
+    - 'System'
   items:
     - 'System'
     - 'Light'
@@ -265,7 +307,7 @@ props:
 
 ### Disabled
 
-Use the `disabled` prop to disable the RadioGroup.
+Use the `disabled` prop to disable the CheckboxGroup.
 
 ::component-code
 ---
@@ -276,10 +318,11 @@ ignore:
 external:
   - items
 externalTypes:
-  - RadioGroupItem[]
+  - CheckboxGroupItem[]
 props:
   disabled: true
-  defaultValue: 'System'
+  defaultValue:
+    - 'System'
   items:
     - 'System'
     - 'Light'

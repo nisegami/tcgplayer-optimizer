@@ -3,6 +3,9 @@ title: PinInput
 description: An input element to enter a pin.
 category: form
 links:
+  - label: PinInput
+    icon: i-custom-reka-ui
+    to: https://reka-ui.com/docs/components/pin-input
   - label: GitHub
     icon: i-simple-icons-github
     to: https://github.com/nuxt/ui/tree/v3/src/runtime/components/PinInput.vue
@@ -176,6 +179,12 @@ props:
 ### Emits
 
 :component-emits
+
+When accessing the component via a template ref, you can use the following:
+
+| Name | Type |
+| ---- | ---- |
+| `inputsRef`{lang="ts-type"} | `Ref<ComponentPublicInstance[]>`{lang="ts-type"} |
 
 ## Theme
 

@@ -275,7 +275,7 @@ This allows you to move the trigger outside of the Slideover or remove it entire
 
 ### Prevent closing
 
-Set the `dismissible` prop to `false` to prevent the Slideover from being closed when clicking outside of it or pressing escape.
+Set the `dismissible` prop to `false` to prevent the Slideover from being closed when clicking outside of it or pressing escape. A `close:prevent` event will be emitted when the user tries to close it.
 
 ::component-code
 ---
@@ -333,7 +333,7 @@ name: 'slideover-programmatic-example'
 ::
 
 ::tip
-You can close the slideover within the slideover component by calling `slideover.close()`.
+You can close the slideover within the slideover component by emitting `emit('close')`.
 ::
 
 ### Nested slideovers
