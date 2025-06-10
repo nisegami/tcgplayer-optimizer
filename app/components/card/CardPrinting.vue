@@ -60,7 +60,14 @@ const desiredQuantity = ref(props.printing.desiredQuantity.toString())
 const maxPrice = ref<number | undefined>(props.printing.maxPrice ?? undefined)
 
 const lastScraped = (printing: Printing) => printing.lastScraped ? `Last refreshed ${formatDistanceToNow(printing.lastScraped)} ago` : 'Never scraped!'
-const dataOutdated = (printing: Printing) => (!printing.lastScraped || Math.abs(differenceInHours(printing.lastScraped, new Date())) > 12) ? 'error' : 'primary'
+const dataOutdated = (printing: Printing) => {
+    if (printing.priority === 'DISABLED')
+        return 'neutral'
+    else if (!printing.lastScraped || Math.abs(differenceInHours(printing.lastScraped, new Date())) > 12)
+        return 'error'
+    else
+        return 'primary'
+}
 
 watch(priority, async () => {
     await modifyPrinting({ priority: priority.value })

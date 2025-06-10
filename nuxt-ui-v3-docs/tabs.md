@@ -23,6 +23,8 @@ Use the `items` prop as an array of objects with the following properties:
 - `value?: string | number`{lang="ts-type"}
 - `disabled?: boolean`{lang="ts-type"}
 - [`slot?: string`{lang="ts-type"}](#with-custom-slot)
+- `class?: any`{lang="ts-type"}
+- `ui?: { trigger?: ClassNameValue, leadingIcon?: ClassNameValue, leadingAvatar?: ClassNameValue, label?: ClassNameValue, content?: ClassNameValue }`{lang="ts-type"}
 
 ::component-code
 ---
@@ -210,10 +212,6 @@ You can control the active item by using the `default-value` prop or the `v-mode
 
 :component-example{name="tabs-model-value-example"}
 
-::tip
-You can also pass the `value` of one of the items if provided.
-::
-
 ### With content slot
 
 Use the `#content` slot to customize the content of each item.
@@ -223,6 +221,10 @@ Use the `#content` slot to customize the content of each item.
 ### With custom slot
 
 Use the `slot` property to customize a specific item.
+
+You will have access to the following slots:
+
+- `#{{ item.slot }}`{lang="ts-type"}
 
 :component-example{name="tabs-custom-slot-example"}
 

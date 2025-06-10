@@ -53,6 +53,8 @@ Each group contains an `items` array of objects that define the commands. Each i
 - `disabled?: boolean`{lang="ts-type"}
 - [`slot?: string`{lang="ts-type"}](#with-custom-slot)
 - `onSelect?(e?: Event): void`{lang="ts-type"}
+- `class?: any`{lang="ts-type"}
+- `ui?: { item?: ClassNameValue, itemLeadingIcon?: ClassNameValue, itemLeadingAvatarSize?: ClassNameValue, itemLeadingAvatar?: ClassNameValue, itemLeadingChipSize?: ClassNameValue, itemLeadingChip?: ClassNameValue, itemLabel?: ClassNameValue, itemLabelPrefix?: ClassNameValue, itemLabelBase?: ClassNameValue, itemLabelSuffix?: ClassNameValue, itemTrailing?: ClassNameValue, itemTrailingKbds?: ClassNameValue, itemTrailingKbdsSize?: ClassNameValue, itemTrailingHighlightedIcon?: ClassNameValue, itemTrailingIcon?: ClassNameValue,}`{lang="ts-type"}
 
 You can pass any property from the [Link](/components/link#props) component such as `to`, `target`, etc.
 
@@ -277,7 +279,7 @@ props:
 
 ### Loading Icon
 
-Use the `loading-icon` prop to customize the loading icon. Defaults to `i-lucide-refresh-cw`.
+Use the `loading-icon` prop to customize the loading icon. Defaults to `i-lucide-loader-circle`.
 
 ::component-code
 ---
@@ -293,7 +295,7 @@ class: '!p-0'
 props:
   autofocus: false
   loading: true
-  loadingIcon: 'i-lucide-repeat-2'
+  loadingIcon: 'i-lucide-loader'
   groups:
     - id: 'apps'
       items:

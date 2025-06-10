@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { TableColumn } from '@nuxt/ui'
+import { ModalSellerDetails } from '#components'
 
 const props = defineProps<{
     seller: Seller
@@ -11,6 +12,17 @@ const props = defineProps<{
         }[]
     }[]
 }>()
+
+const modals = useModals()
+
+function openSellerDetailsModal() {
+    modals.open(ModalSellerDetails, {
+        props: {
+            sellerId: props.seller.id,
+            sellerKey: props.seller.key,
+        },
+    })
+}
 
 async function openOnTCGPlayer() {
     return await navigateTo(`https://shop.tcgplayer.com/sellerfeedback/${props.seller.key}`, { external: true, open: { target: '_blank' } })
@@ -85,8 +97,8 @@ const columns: TableColumn<ListingRow>[] = [
                         variant="outline"
                         color="primary"
                         class="flex-shrink-0"
-                        :to="`/seller/${seller.id}`"
                         title="View all listings including hidden ones"
+                        @click="openSellerDetailsModal()"
                     />
                     <UButton
                         icon="i-lucide-external-link"

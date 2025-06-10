@@ -172,7 +172,7 @@ props:
 
 ### Loading Icon
 
-Use the `loading-icon` prop to customize the loading icon. Defaults to `i-lucide-refresh-cw`.
+Use the `loading-icon` prop to customize the loading icon. Defaults to `i-lucide-loader-circle`.
 
 ::component-code
 ---
@@ -180,7 +180,7 @@ ignore:
   - placeholder
 props:
   loading: true
-  loadingIcon: 'i-lucide-repeat-2'
+  loadingIcon: 'i-lucide-loader'
   placeholder: 'Search...'
 ---
 ::
@@ -276,6 +276,16 @@ name: 'input-kbd-example'
 
 ::note{to="/composables/define-shortcuts"}
 This example uses the `defineShortcuts` composable to focus the Input when the :kbd{value="/"} key is pressed.
+::
+
+### With mask
+
+There's no built-in support for masks, but you can use librairies like [maska](https://github.com/beholdr/maska) to mask the Input.
+
+::component-example
+---
+name: 'input-mask-example'
+---
 ::
 
 ### With floating label

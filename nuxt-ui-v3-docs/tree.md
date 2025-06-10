@@ -26,6 +26,8 @@ Use the `items` prop as an array of objects with the following properties:
 - `children?: TreeItem[]`{lang="ts-type"}
 - `onToggle?(e: Event): void`{lang="ts-type"}
 - `onSelect?(e?: Event): void`{lang="ts-type"}
+- `class?: any`{lang="ts-type"}
+- `ui?: { item?: ClassNameValue, itemWithChildren?: ClassNameValue, link?: ClassNameValue, linkLeadingIcon?: ClassNameValue, linkLabel?: ClassNameValue, linkTrailing?: ClassNameValue, linkTrailingIcon?: ClassNameValue, listWithChildren?: ClassNameValue }`{lang="ts-type"}
 
 ::note
 A unique identifier is required for each item. The component will use the `value` prop as identifier, falling back to `label` if `value` is not provided. One of these must be provided for the component to work properly.
@@ -405,7 +407,14 @@ This lets you select a parent item without expanding or collapsing its children.
 
 ### With custom slot
 
-Use the `item.slot` property to customize a specific item.
+Use the `slot` property to customize a specific item.
+
+You will have access to the following slots:
+
+- `#{{ item.slot }}`{lang="ts-type"}
+- `#{{ item.slot }}-leading`{lang="ts-type"}
+- `#{{ item.slot }}-label`{lang="ts-type"}
+- `#{{ item.slot }}-trailing`{lang="ts-type"}
 
 ::component-example
 ---

@@ -90,8 +90,7 @@ const tcgplayerSaleHistoryResponseSchema = z.object({
 const customAttributesSchema = z.object({
     description: z.string(),
     number: z.string(),
-    cardTypeB: z.string(),
-
+    cardTypeB: z.string().nullable().default('Unknown'),
     attribute: z.array(z.string()).nullish(),
     detailNote: z.string().nullish(),
     releaseDate: z.string().datetime().nullish(),
