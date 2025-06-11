@@ -60,7 +60,7 @@ async function copyToClipboard() {
             </div>
             <div class="flex items-center justify-between">
                 <h3 class="font-semibold text-lg text-gray-900 dark:text-white">
-                    Arshad's Want List ({{ wantListData.length }} cards)
+                    Arshad's Want List ({{ wantListData?.length }} cards)
                 </h3>
                 <UButton
                     icon="i-lucide-copy"

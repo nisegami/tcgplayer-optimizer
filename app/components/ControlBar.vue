@@ -19,6 +19,9 @@ async function handleUrlSubmit() {
             body: { productId },
         })
 
+        queryClient.refetchQueries({ queryKey: ['sellers'] })
+        queryClient.refetchQueries({ queryKey: ['cards'] })
+
         toast.add({
             title: 'Success!',
             description: 'New card has been scraped successfully',
@@ -95,6 +98,7 @@ function extractProductIdFromUrl(url: string) {
                 icon="i-lucide-plus"
                 size="xl"
                 color="info"
+                title="Add Printing"
                 @click="handleUrlSubmit"
             />
         </div>
@@ -102,13 +106,14 @@ function extractProductIdFromUrl(url: string) {
             :disabled="isRefreshing"
             icon="i-lucide-refresh-cw"
             size="xl"
+            title="Refresh Stale"
             @click="refreshPrintings"
         />
         <NuxtLink to="/want-list">
             <UButton
                 icon="i-lucide-list"
                 size="xl"
-                color="gray"
+                color="neutral"
                 title="View Want List"
             />
         </NuxtLink>
