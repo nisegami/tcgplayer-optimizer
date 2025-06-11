@@ -104,5 +104,13 @@ function extractProductIdFromUrl(url: string) {
             size="xl"
             @click="refreshPrintings"
         />
+        <NuxtLink to="/want-list">
+            <UButton
+                icon="i-lucide-list"
+                size="xl"
+                color="gray"
+                title="View Want List"
+            />
+        </NuxtLink>
     </div>
 </template>
