@@ -1,7 +1,7 @@
-import { differenceInDays, parseJSON } from 'date-fns'
+import { parseJSON } from 'date-fns'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { cards, listings, printings, salesHistory, sellers } from '../../shared/utils/schema'
+import { cards, listings, printings, salesHistory, sellers, conditionEnum } from '../../shared/utils/schema'
 
 let lastRequestTime = 0
 const MIN_REQUEST_INTERVAL = 250 // 250ms between requests
@@ -411,169 +411,85 @@ async function calculateGoodDealPrice(
     printing: Printing,
 ): Promise<number | null> {
     try {
-        if (!salesData.length && !productListings.length) {
+        const desiredEdition = printing.desiredEdition
+        const desiredCondition = printing.desiredCondition
+
+        // console.log(`[calculateGoodDealPrice] Starting calculation for printing ${printing.setName}-${printing.setCode} (${printing.rarity})`)
+        // console.log(`[calculateGoodDealPrice] Desired edition: ${desiredEdition}, condition: ${desiredCondition}`)
+        // console.log(`[calculateGoodDealPrice] Input data - listings: ${productListings.length}, sales: ${salesData.length}`)
+
+        // Helper functions for filtering (same logic as sellers endpoint)
+        function conditionTest(listingCondition: Condition, desiredCondition: Condition): boolean {
+            const left = conditionEnum.enumValues.indexOf(listingCondition)
+            const right = conditionEnum.enumValues.indexOf(desiredCondition)
+            return left <= right
+        }
+
+        function editionTest(listingEdition: Edition, desiredEdition: Edition): boolean {
+            return (desiredEdition === 'ANY') || (desiredEdition === listingEdition)
+        }
+
+        // Filter listings to match desired edition and condition
+        const matchingListings = productListings.filter((listing) => {
+            const editionMatch = editionTest(listing.printing, desiredEdition)
+            const conditionMatch = conditionTest(listing.condition, desiredCondition)
+            // console.log(`[calculateGoodDealPrice] Listing - edition: ${listing.printing} (match: ${editionMatch}), condition: ${listing.condition} (match: ${conditionMatch})`)
+            return editionMatch && conditionMatch
+        })
+
+        // Filter sales history to match desired edition and condition
+        const matchingSales = salesData.filter((sale) => {
+            const saleEdition = mapVariantToEdition(sale.variant)
+            const saleCondition = sale.condition.toUpperCase() as Condition
+            const editionMatch = editionTest(saleEdition, desiredEdition)
+            const conditionMatch = conditionTest(saleCondition, desiredCondition)
+            // console.log(`[calculateGoodDealPrice] Sale - edition: ${saleEdition} (match: ${editionMatch}), condition: ${saleCondition} (match: ${conditionMatch})`)
+            return editionMatch && conditionMatch
+        })
+
+        // console.log(`[calculateGoodDealPrice] Filtered data - matching listings: ${matchingListings.length}, matching sales: ${matchingSales.length}`)
+
+        // Collect all prices from both sources
+        const allPrices: number[] = []
+
+        // Add sales prices (weighted more heavily as they represent actual market transactions)
+        if (matchingSales.length > 0) {
+            const salesPrices = matchingSales.map(sale => sale.purchasePrice)
+            // console.log(`[calculateGoodDealPrice] Sales prices: [${salesPrices.join(', ')}]`)
+            // Add sales prices twice to give them more weight in the calculation
+            allPrices.push(...salesPrices, ...salesPrices)
+        }
+
+        // Add current listing prices
+        if (matchingListings.length > 0) {
+            const listingPrices = matchingListings.map(listing => listing.price)
+            // console.log(`[calculateGoodDealPrice] Listing prices: [${listingPrices.join(', ')}]`)
+            allPrices.push(...listingPrices)
+        }
+
+        // If we have no matching data, return null
+        if (allPrices.length === 0) {
+            // console.log(`[calculateGoodDealPrice] No matching data found, returning null`)
             return null
         }
 
-        const desiredQuantity = printing.desiredQuantity || 1
-        const desiredEdition = printing.desiredEdition || 'ANY'
-        const desiredCondition = printing.desiredCondition || 'MODERATELY PLAYED'
+        // Sort all prices and calculate the 25th percentile as "good deal" price
+        const sortedPrices = allPrices.sort((a, b) => a - b)
+        const percentileIndex = Math.floor(sortedPrices.length * 0.25)
+        const goodDealPrice = sortedPrices[percentileIndex]
 
-        // Filter sales by desired conditions
-        const filteredSales = salesData.filter((sale) => {
-            const saleCondition = sale.condition.toUpperCase() as Condition
-            const saleEdition = mapVariantToEdition(sale.variant)
+        // console.log(`[calculateGoodDealPrice] All prices (${allPrices.length}): [${sortedPrices.join(', ')}]`)
+        // console.log(`[calculateGoodDealPrice] 25th percentile index: ${percentileIndex}, good deal price: ${goodDealPrice}`)
 
-            // Check if the sale matches our desired condition (or better)
-            const conditionMatches = conditionRank(saleCondition) >= conditionRank(desiredCondition)
+        const finalPrice = Math.round(goodDealPrice * 100) / 100
+        // console.log(`[calculateGoodDealPrice] Final calculated price: ${finalPrice}`)
 
-            // Check if the sale matches our desired edition (or ANY)
-            const editionMatches = desiredEdition === 'ANY' || saleEdition === desiredEdition || saleEdition === 'ANY'
-
-            return conditionMatches && editionMatches
-        })
-
-        // Extract prices from sales, considering quantity
-        const salesPrices = filteredSales.map((sale) => {
-            const totalPrice = sale.purchasePrice + sale.shippingPrice
-
-            // If we want multiple cards and this sale had multiple, prioritize it
-            const quantityMultiplier = (desiredQuantity > 1 && sale.quantity > 1) ? 0.9 : 1.0
-
-            // Consider recency of sale - more recent sales get more weight
-            const daysSinceSale = differenceInDays(new Date(), parseJSON(sale.orderDate))
-            const recencyFactor = Math.max(0.8, 1 - (daysSinceSale / 100))
-
-            return {
-                price: totalPrice * quantityMultiplier * recencyFactor,
-                date: parseJSON(sale.orderDate),
-                quantity: sale.quantity,
-            }
-        }).sort((a, b) => a.price - b.price)
-
-        // Calculate sales statistics
-        let salesMedian = null
-        let salesTrend = 0
-        let salesRate = 0
-
-        if (salesPrices.length > 0) {
-            // Calculate median price
-            const mid = Math.floor(salesPrices.length / 2)
-            salesMedian = salesPrices.length % 2 === 0
-                ? (salesPrices[mid - 1].price + salesPrices[mid].price) / 2
-                : salesPrices[mid].price
-
-            // Calculate sales trend (price change over time)
-            if (salesPrices.length >= 5) {
-                // Sort by date for trend analysis
-                const byDate = [...salesPrices].sort((a, b) => b.date.getTime() - a.date.getTime())
-                const recentAvg = byDate.slice(0, Math.min(3, byDate.length))
-                    .reduce((sum, s) => sum + s.price, 0) / Math.min(3, byDate.length)
-                const olderAvg = byDate.slice(Math.max(3, byDate.length - 3))
-                    .reduce((sum, s) => sum + s.price, 0) / Math.min(3, byDate.length)
-
-                salesTrend = (recentAvg - olderAvg) / olderAvg // percentage change
-            }
-
-            // Calculate sales rate (sales per day)
-            if (salesPrices.length >= 2) {
-                const newest = new Date(Math.max(...salesPrices.map(s => s.date.getTime())))
-                const oldest = new Date(Math.min(...salesPrices.map(s => s.date.getTime())))
-                const daySpan = Math.max(1, differenceInDays(newest, oldest))
-                salesRate = salesPrices.length / daySpan
-            }
-        }
-
-        // Filter and analyze listings
-        const filteredListings = productListings.filter((listing) => {
-            const listingCondition = listing.condition
-            const listingEdition = listing.printing
-
-            // Check if the listing matches our desired condition (or better)
-            const conditionMatches = conditionRank(listingCondition) >= conditionRank(desiredCondition)
-
-            // Check if the listing matches our desired edition (or ANY)
-            const editionMatches = desiredEdition === 'ANY' || listingEdition === desiredEdition || listingEdition === 'ANY'
-
-            // Check quantity
-            const quantityMatches = listing.quantity >= desiredQuantity
-
-            return conditionMatches && editionMatches && quantityMatches
-        })
-
-        const listingPrices = filteredListings.map((listing) => {
-            // Total price including shipping
-            return listing.price + listing.shippingPrice
-        }).sort((a, b) => a - b)
-
-        // Calculate listings statistics
-        let listingsPercentile = null
-
-        if (listingPrices.length > 0) {
-            // Calculate 25th percentile (good deal threshold)
-            const percentileIndex = Math.floor(listingPrices.length * 0.25)
-            listingsPercentile = listingPrices[percentileIndex]
-        }
-
-        // Determine good deal price based on all factors
-        if (salesMedian && listingsPercentile) {
-            // Base the good deal price on both sales and listings
-            let goodDealBase = Math.min(salesMedian * 0.9, listingsPercentile)
-
-            // Adjust for trend
-            if (salesTrend < -0.1) {
-                // Trending down, be more aggressive
-                goodDealBase *= 0.9
-            }
-            else if (salesTrend > 0.1) {
-                // Trending up, can be less aggressive
-                goodDealBase *= 0.95
-            }
-
-            // Adjust for sales rate
-            if (salesRate > 1) {
-                // High demand, be less aggressive
-                goodDealBase *= 0.95
-            }
-            else if (salesRate < 0.2) {
-                // Low demand, be more aggressive
-                goodDealBase *= 0.85
-            }
-
-            return parseFloat(goodDealBase.toFixed(2))
-        }
-        else if (salesMedian) {
-            // Only have sales data
-            return parseFloat((salesMedian * 0.85).toFixed(2))
-        }
-        else if (listingsPercentile) {
-            // Only have listings data
-            return parseFloat((listingsPercentile * 0.9).toFixed(2))
-        }
-
-        // Fallback to market price if available
-        if (printing.marketPrice) {
-            return parseFloat((printing.marketPrice * 0.85).toFixed(2))
-        }
-
-        return null
+        return finalPrice // Round to 2 decimal places
     }
     catch (error) {
         console.error('Error calculating good deal price:', error)
         return null
     }
-}
-
-// Helper function to rank conditions from worst to best
-function conditionRank(condition: Condition): number {
-    const ranks = {
-        'DAMAGED': 1,
-        'HEAVILY PLAYED': 2,
-        'MODERATELY PLAYED': 3,
-        'LIGHTLY PLAYED': 4,
-        'NEAR MINT': 5,
-    }
-    return ranks[condition] || 0
 }
 
 export function useScraper() {

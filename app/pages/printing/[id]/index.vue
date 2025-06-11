@@ -133,7 +133,11 @@ onServerPrefetch(suspense)
                         <UTable
                             :data
                             :columns
-                            :row-class="(row: ListingRow) => row.isGoodDeal ? 'bg-green-100 dark:bg-green-950' : ''"
+                            :meta="{
+                                class: {
+                                    tr: (row: ListingRow) => row.isGoodDeal ? 'bg-green-100 dark:bg-green-950' : '',
+                                },
+                            }"
                         />
                     </div>
 

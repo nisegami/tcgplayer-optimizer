@@ -1,10 +1,12 @@
 <script lang="ts" setup>
 import { differenceInHours, formatDistanceToNow } from 'date-fns'
+import { ModalPrintingListings, ModalPrintingSales } from '#components'
 
 const props = defineProps<{ printing: Printing }>()
 
 const toast = useToast()
 const queryClient = useQueryClient()
+const modals = useModals()
 
 async function openOnTCGPlayer() {
     return await navigateTo(`https://www.tcgplayer.com/product/${props.printing.itemNo}`, { external: true, open: { target: '_blank' } })
@@ -51,6 +53,22 @@ async function refreshListings() {
 
     queryClient.refetchQueries({ queryKey: ['sellers'] })
     queryClient.refetchQueries({ queryKey: ['cards'] })
+}
+
+function openListingsModal() {
+    modals.open(ModalPrintingListings, {
+        props: {
+            printingId: props.printing.id,
+        },
+    })
+}
+
+function openSalesModal() {
+    modals.open(ModalPrintingSales, {
+        props: {
+            printingId: props.printing.id,
+        },
+    })
 }
 
 const priority = ref(props.printing.priority)
@@ -164,13 +182,22 @@ watch(maxPrice, async () => {
                 variant="outline"
                 @click="openOnTCGPlayer()"
             />
+            <UTooltip text="View Listings">
+                <UButton
+                    icon="i-lucide-list"
+                    size="xl"
+                    color="success"
+                    variant="outline"
+                    @click="openListingsModal"
+                />
+            </UTooltip>
             <UTooltip text="View Sales History">
                 <UButton
                     icon="i-lucide-history"
                     size="xl"
                     color="primary"
                     variant="outline"
-                    :to="`/printing/${printing.id}/sales`"
+                    @click="openSalesModal"
                 />
             </UTooltip>
         </div>
