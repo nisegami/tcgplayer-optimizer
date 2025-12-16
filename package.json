@@ -18,10 +18,10 @@
     "@iconify-json/simple-icons": "^1.2.63",
     "@nuxt/ui": "^4.2.1",
     "@outloud/nuxt-modals": "^2.0.4",
-    "@peterbud/nuxt-query": "^1.3.0",
+    "@peterbud/nuxt-query": "1.3.0",
     "@tanstack/vue-query": "^5.92.1",
     "date-fns": "^4.1.0",
-    "dotenv": "^17.2.3",
+    "dotenv": "^16.6.1",
     "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",
     "nuxt": "^4.2.2",
@@ -33,10 +33,9 @@
     "drizzle-kit": "^0.31.8",
     "eslint": "^9.39.2",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3",
-    "vue-tsc": "^3.1.8"
+    "typescript": "^5.9.3"
   },
-  "packageManager": "pnpm@10.25.0",
+  "packageManager": "pnpm@10.5.1+sha512.c424c076bd25c1a5b188c37bb1ca56cc1e136fbf530d98bcb3289982a08fd25527b8c9c4ec113be5e3393c39af04521dd647bcf1d0801eaf8ac6a7b14da313af",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@hebilicious/vue-query-nuxt",

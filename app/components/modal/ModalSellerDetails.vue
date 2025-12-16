@@ -29,7 +29,7 @@ async function openOnTCGPlayer() {
         </div>
         <div v-else-if="data">
             <!-- Seller Info Card - Compact Header -->
-            <UCard class="mb-4">
+            <UCard class="min-h-fit mb-4">
                 <template #header>
                     <div class="flex justify-between items-center">
                         <h1

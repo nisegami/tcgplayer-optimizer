@@ -119,7 +119,7 @@ onServerPrefetch(suspense)
                     </div>
                 </div>
 
-                <UCard>
+                <UCard class="min-h-fit">
                     <template #header>
                         <div class="flex justify-between items-center">
                             <h2 class="text-xl font-semibold">

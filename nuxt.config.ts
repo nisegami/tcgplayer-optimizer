@@ -8,6 +8,8 @@ export default defineNuxtConfig({
         '@outloud/nuxt-modals',
     ],
 
+    ssr: false,
+
     devtools: { enabled: true },
 
     css: ['~/assets/css/main.css'],

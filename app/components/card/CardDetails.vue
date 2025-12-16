@@ -6,7 +6,7 @@ defineProps<{
 </script>
 
 <template>
-    <UCard>
+    <UCard class="min-h-fit">
         <template #header>
             <div class="flex flex-row justify-center w-full">
                 {{ card.name }}
