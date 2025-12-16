@@ -12,6 +12,7 @@ modals.content = $content
 </script>
 
 <template>
+    <NuxtLoadingIndicator />
     <div>
         <div ref="$content">
             <UApp>

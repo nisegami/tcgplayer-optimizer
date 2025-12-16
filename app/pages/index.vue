@@ -1,12 +1,12 @@
 <script setup lang="ts">
-const { data: cardData, suspense: cardSuspense } = useQuery({
+const { data: cardData, isLoading: cardsLoading } = useQuery({
     queryKey: ['cards'],
     queryFn: async () => {
         return await $fetch('/api/cards') as { card: Card, printings: Printing[] }[]
     },
 })
 
-const { data: sellerData, suspense: sellerSuspense, isLoading: sellersLoading, dataUpdatedAt: sellersUpdatedAt } = useQuery({
+const { data: sellerData, isLoading: sellersLoading, dataUpdatedAt: sellersUpdatedAt } = useQuery({
     queryKey: ['sellers'],
     queryFn: async () => {
         return await $fetch('/api/sellers') as SellerWithCards[]
@@ -30,9 +30,6 @@ onMounted(() => {
         window.removeEventListener('resize', checkMobile)
     })
 })
-
-onServerPrefetch(cardSuspense)
-onServerPrefetch(sellerSuspense)
 </script>
 
 <template>
@@ -44,6 +41,28 @@ onServerPrefetch(sellerSuspense)
             <div class="hidden md:block">
                 <ControlBar />
             </div>
+
+            <!-- Cards Loading State -->
+            <div
+                v-if="cardsLoading"
+                class="space-y-5"
+            >
+                <div
+                    v-for="i in 3"
+                    :key="i"
+                    class="space-y-3"
+                >
+                    <USkeleton class="h-6 w-3/4" />
+                    <USkeleton class="h-4 w-full" />
+                    <USkeleton class="h-4 w-2/3" />
+                    <div class="space-y-2">
+                        <USkeleton class="h-3 w-1/2" />
+                        <USkeleton class="h-3 w-3/4" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cards Content -->
             <CardDetails
                 v-for="{ card, printings } of cardData"
                 :key="card.id"
@@ -52,8 +71,41 @@ onServerPrefetch(sellerSuspense)
             />
         </div>
 
+        <!-- Sellers Loading State -->
         <div
-            v-if="!sellersLoading"
+            v-if="sellersLoading"
+            class="flex-grow w-full md:w-2/3 overflow-y-auto overflow-x-none flex flex-col gap-5 p-5 pb-32 md:pb-5"
+            :class="{ hidden: isMobile && activeView !== 'sellers' }"
+        >
+            <div
+                v-for="i in 4"
+                :key="i"
+                class="space-y-4"
+            >
+                <div class="flex items-center gap-3">
+                    <USkeleton class="h-8 w-8 rounded-full" />
+                    <USkeleton class="h-5 w-32" />
+                </div>
+                <div class="space-y-3">
+                    <div
+                        v-for="j in 2"
+                        :key="j"
+                        class="flex gap-3"
+                    >
+                        <USkeleton class="h-16 w-16 rounded" />
+                        <div class="flex-1 space-y-2">
+                            <USkeleton class="h-4 w-3/4" />
+                            <USkeleton class="h-3 w-1/2" />
+                            <USkeleton class="h-3 w-1/4" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sellers Content -->
+        <div
+            v-else-if="!sellersLoading"
             :key="sellersUpdatedAt"
             class="flex-grow w-full md:w-2/3 overflow-y-auto overflow-x-none flex flex-col gap-5 p-5 pb-32 md:pb-5"
             :class="{ hidden: isMobile && activeView !== 'sellers' }"

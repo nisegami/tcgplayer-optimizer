@@ -4,9 +4,12 @@ export default defineNuxtConfig({
     modules: [
         '@nuxt/ui',
         '@nuxt/eslint',
-        '@hebilicious/vue-query-nuxt',
+        '@peterbud/nuxt-query',
         '@outloud/nuxt-modals',
     ],
+
+    ssr: false,
+
     devtools: { enabled: true },
 
     css: ['~/assets/css/main.css'],
@@ -17,12 +20,30 @@ export default defineNuxtConfig({
 
     compatibilityDate: '2024-11-27',
 
+    vite: {
+        server: {
+            allowedHosts: ['cart.arshad.lol'],
+        },
+    },
+
     eslint: {
         config: {
             stylistic: {
                 indent: 4,
                 quotes: 'single',
                 semi: false,
+            },
+        },
+    },
+
+    nuxtQuery: {
+        autoImports: ['useQuery', 'useMutation', 'useQueryClient'],
+        devtools: true,
+        queryClientOptions: {
+            defaultOptions: {
+                queries: {
+                    staleTime: 30 * 1000, // 30 seconds
+                },
             },
         },
     },
