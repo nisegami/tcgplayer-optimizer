@@ -1,7 +1,7 @@
 import { parseJSON } from 'date-fns'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
-import { cards, listings, printings, salesHistory, sellers, conditionEnum } from '../../shared/utils/schema'
+import { cards, conditionEnum, editionEnum, listings, printings, salesHistory, sellers } from '../../shared/utils/schema'
 
 let lastRequestTime = 0
 const MIN_REQUEST_INTERVAL = 250 // 250ms between requests

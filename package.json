@@ -12,12 +12,12 @@
     "lint:fix": "eslint --fix ."
   },
   "dependencies": {
-    "@hebilicious/vue-query-nuxt": "0.3.0",
     "@iconify-json/heroicons": "^1.2.2",
     "@iconify-json/lucide": "^1.2.47",
     "@iconify-json/simple-icons": "^1.2.38",
     "@nuxt/ui": "^3.1.3",
     "@outloud/nuxt-modals": "^2.0.4",
+    "@peterbud/nuxt-query": "1.3.0",
     "@tanstack/vue-query": "^5.80.6",
     "date-fns": "^4.1.0",
     "dotenv": "^16.5.0",
