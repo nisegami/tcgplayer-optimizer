@@ -2,22 +2,30 @@
     "editor.tabSize": 4,
     "editor.insertSpaces": true,
     "[javascript]": {
-      "editor.tabSize": 4
+        "editor.tabSize": 4
     },
     "[typescript]": {
-      "editor.tabSize": 4
+        "editor.tabSize": 4
     },
     "[vue]": {
-      "editor.tabSize": 4
+        "editor.tabSize": 4
     },
-    
     "files.associations": {
         "*.css": "tailwindcss"
     },
     "editor.quickSuggestions": {
         "strings": "on"
     },
-
+    "tailwindCSS.classAttributes": [
+        "class",
+        "ui"
+    ],
+    "tailwindCSS.experimental.classRegex": [
+        [
+            "ui:\\s*{([^)]*)\\s*}",
+            "(?:'|\"|`)([^']*)(?:'|\"|`)"
+        ]
+    ],
     // Disable the default formatter, use eslint instead
     "editor.formatOnSave": false,
     // Auto fix
@@ -103,4 +111,4 @@
         "pcss",
         "postcss"
     ]
-  }
+}
