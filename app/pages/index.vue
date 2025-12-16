@@ -74,7 +74,7 @@ onMounted(() => {
         <!-- Sellers Loading State -->
         <div
             v-if="sellersLoading"
-            class="flex-grow w-full md:w-2/3 overflow-y-auto overflow-x-none flex flex-col gap-5 p-5 pb-32 md:pb-5"
+            class="grow w-full md:w-2/3 overflow-y-auto overflow-x-none flex flex-col gap-5 p-5 pb-32 md:pb-5"
             :class="{ hidden: isMobile && activeView !== 'sellers' }"
         >
             <div
@@ -107,14 +107,20 @@ onMounted(() => {
         <div
             v-else-if="!sellersLoading"
             :key="sellersUpdatedAt"
-            class="flex-grow w-full md:w-2/3 overflow-y-auto overflow-x-none flex flex-col gap-5 p-5 pb-32 md:pb-5"
+            class="grow w-full md:w-2/3 overflow-y-auto overflow-x-none flex flex-col gap-5 p-5 pb-32 md:pb-5"
             :class="{ hidden: isMobile && activeView !== 'sellers' }"
         >
             <SellerWithListings
                 v-for="{ seller, cards } of sellerData"
                 :key="seller.id"
                 :seller="seller"
-                :cards="cards as CardWithPrintings[]"
+                :cards="cards as {
+                    card: Card
+                    printings: {
+                        printing: Printing
+                        listings: Listing[]
+                    }[]
+                }[]"
             />
         </div>
 

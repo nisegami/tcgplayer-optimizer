@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import type { TableColumn } from '@nuxt/ui'
-import { ModalSellerDetails } from '#components'
+import { ModalSellerDetails } from '#components';
+import type { TableColumn } from '@nuxt/ui';
 
 const props = defineProps<{
     seller: Seller
@@ -87,7 +87,7 @@ const columns: TableColumn<ListingRow>[] = [
 </script>
 
 <template>
-    <UCard>
+    <UCard class="min-h-fit">
         <template #header>
             <div class="flex flex-row justify-center w-full items-center space-x-5">
                 <div>{{ seller.name }}</div>
@@ -96,14 +96,14 @@ const columns: TableColumn<ListingRow>[] = [
                         icon="i-lucide-list"
                         variant="outline"
                         color="primary"
-                        class="flex-shrink-0"
+                        class="shrink-0"
                         title="View all listings including hidden ones"
                         @click="openSellerDetailsModal()"
                     />
                     <UButton
                         icon="i-lucide-external-link"
                         variant="outline"
-                        class="flex-shrink-0"
+                        class="shrink-0"
                         title="Open seller on TCGPlayer"
                         @click="openOnTCGPlayer()"
                     />

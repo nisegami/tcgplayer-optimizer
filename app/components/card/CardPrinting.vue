@@ -1,6 +1,6 @@
 <script lang="ts" setup>
-import { differenceInHours, formatDistanceToNow } from 'date-fns'
-import { ModalPrintingListings, ModalPrintingSales } from '#components'
+import { ModalPrintingListings, ModalPrintingSales } from '#components';
+import { differenceInHours, formatDistanceToNow } from 'date-fns';
 
 const props = defineProps<{ printing: Printing }>()
 
@@ -123,42 +123,42 @@ watch(maxPrice, async () => {
             </div>
         </div>
 
-        <div class="col-span-12 xl:col-span-4 flex space-x-2 items-center">
+        <div class="col-span-12 2xl:col-span-4 flex space-x-2 items-center">
             <USelect
                 v-model="desiredCondition"
                 :items="conditionValues"
                 class="w-full"
             />
         </div>
-        <div class="col-span-6 xl:col-span-4 flex space-x-2 items-center">
+        <div class="col-span-6 2xl:col-span-4 flex space-x-2 items-center">
             <USelect
                 v-model="priority"
                 :items="priorityValues"
                 class="w-full"
             />
         </div>
-        <div class="col-span-6 xl:col-span-4 flex space-x-2 items-center">
+        <div class="col-span-6 2xl:col-span-4 flex space-x-2 items-center">
             <USelect
                 v-model="desiredEdition"
                 :items="editionValues"
                 class="w-full"
             />
         </div>
-        <div class="col-span-6 xl:col-span-3 flex space-x-2 items-center">
+        <div class="col-span-6 2xl:col-span-3 flex space-x-2 items-center">
             <USelect
                 v-model="desiredQuantity"
                 :items="quantityValues"
                 class="w-full"
             />
         </div>
-        <div class="col-span-6 xl:col-span-3 flex space-x-2 items-center">
+        <div class="col-span-6 2xl:col-span-3 flex space-x-2 items-center">
             <UInput
                 v-model="maxPrice"
                 icon="i-lucide-dollar-sign"
                 type="number"
             />
         </div>
-        <div class="col-span-12 xl:col-span-6 flex space-x-2 items-center justify-center">
+        <div class="col-span-12 2xl:col-span-6 flex space-x-2 items-center justify-center">
             <UButton
                 icon="i-lucide-trash"
                 size="xl"

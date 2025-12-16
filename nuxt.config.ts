@@ -7,6 +7,9 @@ export default defineNuxtConfig({
         '@peterbud/nuxt-query',
         '@outloud/nuxt-modals',
     ],
+
+    ssr: false,
+
     devtools: { enabled: true },
 
     css: ['~/assets/css/main.css'],

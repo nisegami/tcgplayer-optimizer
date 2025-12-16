@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { TableColumn } from '@nuxt/ui'
+import type { TableColumn } from '@nuxt/ui';
 
 const props = defineProps<{
     printingId: number
@@ -69,7 +69,7 @@ const columns: TableColumn<HistoryRow>[] = [
         </div>
         <div v-else-if="response">
             <!-- Card Info Header -->
-            <UCard class="mb-4">
+            <UCard class="min-h-fit mb-4">
                 <template #header>
                     <div class="flex justify-between items-center">
                         <h1 class="text-xl font-bold">
@@ -95,7 +95,7 @@ const columns: TableColumn<HistoryRow>[] = [
             </UCard>
 
             <!-- Sales History Table -->
-            <UCard>
+            <UCard class="min-h-fit">
                 <template #header>
                     <h2 class="text-xl font-semibold">
                         Recent Sales
