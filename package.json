@@ -10,7 +10,7 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
-    "typecheck": "vue-tsc --noEmit"
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@iconify-json/heroicons": "^1.2.3",
@@ -25,7 +25,8 @@
     "drizzle-orm": "^0.45.1",
     "drizzle-zod": "^0.8.3",
     "nuxt": "^4.2.2",
-    "pg": "^8.16.3"
+    "pg": "^8.16.3",
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@nuxt/eslint": "^1.12.1",
@@ -35,7 +36,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
-  "packageManager": "pnpm@10.5.1+sha512.c424c076bd25c1a5b188c37bb1ca56cc1e136fbf530d98bcb3289982a08fd25527b8c9c4ec113be5e3393c39af04521dd647bcf1d0801eaf8ac6a7b14da313af",
+  "packageManager": "pnpm@10.26.0",
   "pnpm": {
     "onlyBuiltDependencies": [
       "@hebilicious/vue-query-nuxt",

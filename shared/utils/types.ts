@@ -1,6 +1,9 @@
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod'
 import { z } from 'zod'
 
+import { cards, conditionEnum, editionEnum, listings, printings, priorityEnum, sellers } from './schema'
+
+// Inferred types from Drizzle tables
 export type Seller = typeof sellers.$inferSelect
 export type Card = typeof cards.$inferSelect
 export type Printing = typeof printings.$inferSelect
@@ -11,15 +14,29 @@ export type CardInsert = typeof cards.$inferInsert
 export type PrintingInsert = typeof printings.$inferInsert
 export type ListingInsert = typeof listings.$inferInsert
 
+// Zod schemas for validation
 export const sellerSelectSchema = createSelectSchema(sellers)
 export const cardSelectSchema = createSelectSchema(cards)
 export const printingSelectSchema = createSelectSchema(printings)
 export const listingSelectSchema = createSelectSchema(listings)
 
-export const sellerInsertSchema = createInsertSchema(sellers)
-export const cardInsertSchema = createInsertSchema(cards)
-export const printingInsertSchema = createInsertSchema(printings)
-export const listingInsertSchema = createInsertSchema(listings)
+export const sellerInsertSchema = createInsertSchema(sellers, {
+    shipping: z.number().nonnegative(),
+    rating: z.number().min(0).max(5),
+})
+export const cardInsertSchema = createInsertSchema(cards, {
+    name: z.string().min(1).trim(),
+})
+export const printingInsertSchema = createInsertSchema(printings, {
+    marketPrice: z.number().nonnegative(),
+    maxPrice: z.number().positive().optional().nullable(),
+    desiredQuantity: z.number().int().positive().default(1),
+})
+export const listingInsertSchema = createInsertSchema(listings, {
+    price: z.number().nonnegative(),
+    quantity: z.number().int().nonnegative(),
+    directQuantity: z.number().int().nonnegative(),
+})
 
 export const partialPrintingInsertSchema = printingInsertSchema.partial()
 export type PrintingUpdate = z.infer<typeof partialPrintingInsertSchema>
@@ -67,26 +84,27 @@ export type PrintingWithListings = z.infer<typeof printingWithListingsSchema>
 export type CardWithPrintings = z.infer<typeof cardWithPrintingsSchema>
 export type SellerWithCards = z.infer<typeof sellerWithCardsSchema>
 
+// Enum schemas with proper type inference
 export const conditions = z.enum(conditionEnum.enumValues)
 export type Condition = z.infer<typeof conditions>
 export const conditionValues = conditionEnum.enumValues.map(v => ({
     label: v,
     value: v,
-}))
+}) as const)
 
 export const editions = z.enum(editionEnum.enumValues)
 export type Edition = z.infer<typeof editions>
 export const editionValues = editionEnum.enumValues.map(v => ({
     label: v,
     value: v,
-}))
+}) as const)
 
 export const priorities = z.enum(priorityEnum.enumValues)
 export type Priority = z.infer<typeof priorities>
 export const priorityValues = priorityEnum.enumValues.map(v => ({
     label: v,
     value: v,
-}))
+}) as const)
 
 export const quantityValues = [
     { label: '1', value: '1' },
