@@ -30,6 +30,8 @@ export default defineEventHandler(async () => {
     // Process each eligible printing
     for (let i = 0; i < eligiblePrintings.length; i++) {
         const printing = eligiblePrintings[i]
+        if (!printing) continue
+
         const progress = Math.round((i / totalPrintings) * 100)
 
         try {

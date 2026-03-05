@@ -39,9 +39,15 @@ export default defineEventHandler(async (event) => {
         throw createError({ statusCode: 404, message: 'Seller not found or has no applicable listings' })
 
     // Group listings by cards and printings
-    const seller = rows[0].seller
+    const firstSeller = rows[0]?.seller
+    if (!firstSeller) {
+        throw createError({ statusCode: 404, message: 'Seller not found' })
+    }
+    const seller = firstSeller
 
     const listingsByCardAndPrinting = rows.reduce((acc, row) => {
+        if (!row.card || !row.printing) return acc
+
         const cardId = row.card.id
         const printingId = row.printing.id
 

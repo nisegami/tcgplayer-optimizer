@@ -5,7 +5,7 @@ const sellerId = parseInt(route.params.id as string, 10)
 const { data, suspense: suspense, isLoading } = useQuery({
     queryKey: ['sellers', sellerId],
     queryFn: async () => {
-        return await $fetch(`/api/sellers/listings/${sellerId}`)
+        return await $fetch(`/api/sellers/listings/${sellerId}`) as any
     },
 })
 
@@ -78,7 +78,7 @@ onServerPrefetch(suspense)
 
             <!-- Card Accordion Groups -->
             <UAccordion
-                :items="data.cards.map(card => ({
+                :items="data.cards.map((card: any) => ({
                     label: card.card.name,
                     slot: 'card-' + card.card.id,
                     defaultOpen: true,

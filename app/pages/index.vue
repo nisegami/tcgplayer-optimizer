@@ -2,14 +2,14 @@
 const { data: cardData, isLoading: cardsLoading } = useQuery({
     queryKey: ['cards'],
     queryFn: async () => {
-        return await $fetch('/api/cards') as { card: Card, printings: Printing[] }[]
+        return await $fetch('/api/cards') as any
     },
 })
 
 const { data: sellerData, isLoading: sellersLoading, dataUpdatedAt: sellersUpdatedAt } = useQuery({
     queryKey: ['sellers'],
     queryFn: async () => {
-        return await $fetch('/api/sellers') as SellerWithCards[]
+        return await $fetch('/api/sellers') as any
     },
 })
 

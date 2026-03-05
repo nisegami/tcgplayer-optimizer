@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import type { TableColumn } from '@nuxt/ui'
+import type { Row } from '@tanstack/vue-table'
 
 const route = useRoute()
 const printingId = parseInt(route.params.id as string)
@@ -7,7 +8,7 @@ const printingId = parseInt(route.params.id as string)
 const { data: response, isLoading, suspense } = useQuery({
     queryKey: ['printing', 'listings', printingId],
     queryFn: async () => {
-        return await $fetch(`/api/listings/${printingId}`)
+        return await $fetch(`/api/listings/${printingId}`) as any
     },
 })
 
@@ -23,7 +24,7 @@ interface ListingRow {
 }
 
 const data = computed(() => {
-    return response.value?.listings.flatMap((listing) => {
+    return response.value?.listings.flatMap((listing: any) => {
         const totalPrice = listing.price + (listing.seller?.shipping ?? 0)
         const isGoodDeal = !!(response.value?.printing?.goodDealPrice && totalPrice <= response.value?.printing?.goodDealPrice)
 
@@ -135,7 +136,7 @@ onServerPrefetch(suspense)
                             :columns
                             :meta="{
                                 class: {
-                                    tr: (row: ListingRow) => row.isGoodDeal ? 'bg-green-100 dark:bg-green-950' : '',
+                                    tr: (row: Row<ListingRow>) => row.original.isGoodDeal ? 'bg-green-100 dark:bg-green-950' : '',
                                 },
                             }"
                         />

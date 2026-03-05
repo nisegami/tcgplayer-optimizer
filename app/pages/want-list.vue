@@ -5,7 +5,7 @@ const toast = useToast()
 
 const { data: wantListData, isLoading } = useQuery({
     queryKey: ['want-list'],
-    queryFn: () => $fetch('/api/want-list'),
+    queryFn: async () => await $fetch('/api/want-list') as any,
 })
 
 function formatPrintings(printings: Printing[]): string {
@@ -18,7 +18,7 @@ const formattedWantList = computed(() => {
     if (!wantListData.value) return ''
 
     return wantListData.value
-        .map(({ card, printings }) => `${card.name} - ${formatPrintings(printings)}`)
+        .map(({ card, printings }: any) => `${card.name} - ${formatPrintings(printings as Printing[])}`)
         .join('\n')
 })
 
@@ -51,7 +51,7 @@ async function copyToClipboard() {
                     <UButton
                         icon="i-lucide-arrow-left"
                         size="sm"
-                        color="gray"
+                        color="neutral"
                         variant="outline"
                     >
                         Back to Dashboard
@@ -100,7 +100,7 @@ async function copyToClipboard() {
                             {{ card.name }}
                         </span>
                         <span class="text-gray-600 dark:text-gray-400">
-                            - {{ formatPrintings(printings) }}
+                            - {{ formatPrintings(printings as Printing[]) }}
                         </span>
                     </div>
                 </li>

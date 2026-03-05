@@ -13,8 +13,13 @@ export default defineEventHandler(async (event) => {
     await drizzle.delete(salesHistory).where(eq(salesHistory.printingId, params.id))
     const deletedPrintings = await drizzle.delete(printings).where(eq(printings.id, params.id)).returning()
     if (deletedPrintings.length) {
-        const cardId = deletedPrintings[0].cardId
-        const [{ value: hasOtherPrintings }] = await drizzle.select({ value: count() }).from(printings).where(eq(printings.cardId, cardId))
+        const deletedPrinting = deletedPrintings[0]
+        if (!deletedPrinting) return
+
+        const cardId = deletedPrinting.cardId
+        const countResult = await drizzle.select({ value: count() }).from(printings).where(eq(printings.cardId, cardId))
+        const hasOtherPrintings = countResult[0]?.value ?? 0
+
         if (!hasOtherPrintings) {
             await drizzle.delete(cards).where(eq(cards.id, cardId))
         }

@@ -7,7 +7,7 @@ const props = defineProps<{
 const { data, isLoading } = useQuery({
     queryKey: ['sellers', props.sellerId],
     queryFn: async () => {
-        return await $fetch(`/api/sellers/listings/${props.sellerId}`)
+        return await $fetch(`/api/sellers/listings/${props.sellerId}`) as any
     },
 })
 
@@ -75,7 +75,7 @@ async function openOnTCGPlayer() {
 
             <!-- Card Accordion Groups -->
             <UAccordion
-                :items="data.cards.map(card => ({
+                :items="data.cards.map((card: any) => ({
                     label: card.card.name,
                     slot: 'card-' + card.card.id,
                     defaultOpen: true,

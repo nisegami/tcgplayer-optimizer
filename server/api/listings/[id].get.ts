@@ -64,6 +64,13 @@ export default defineEventHandler(async (event) => {
         .leftJoin(cards, eq(printings.cardId, cards.id))
         .where(eq(printings.id, printingId))
 
+    if (!printing) {
+        throw createError({
+            statusCode: 404,
+            message: 'Printing not found',
+        })
+    }
+
     // Get the listings for this printing
     const listingsWithSellers = await db.select({
         id: listings.id,

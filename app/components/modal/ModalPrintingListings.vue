@@ -8,7 +8,7 @@ const props = defineProps<{
 const { data: response, isLoading } = useQuery({
     queryKey: ['printing', 'listings', props.printingId],
     queryFn: async () => {
-        return await $fetch(`/api/listings/${props.printingId}`)
+        return await $fetch(`/api/listings/${props.printingId}`) as any
     },
 })
 
@@ -24,7 +24,7 @@ interface ListingRow {
 }
 
 const data = computed(() => {
-    return response.value?.listings.flatMap((listing) => {
+    return response.value?.listings.flatMap((listing: any) => {
         const totalPrice = listing.price + (listing.seller?.shipping ?? 0)
         const isGoodDeal = !!(response.value?.printing?.goodDealPrice && totalPrice <= response.value?.printing?.goodDealPrice)
 

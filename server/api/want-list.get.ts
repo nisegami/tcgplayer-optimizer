@@ -28,11 +28,19 @@ export default defineEventHandler(async () => {
         (acc, row) => {
             const card = row.card
             const printing = row.printing
-            if (!acc[card.id])
-                acc[card.id] = { card, printings: [] }
+            if (!card) return acc
 
-            if (printing)
-                acc[card.id].printings.push(printing)
+            const cardId = card.id
+            if (!acc[cardId]) {
+                acc[cardId] = { card, printings: [] }
+            }
+
+            if (printing) {
+                const cardData = acc[cardId]
+                if (cardData) {
+                    cardData.printings.push(printing)
+                }
+            }
 
             return acc
         },

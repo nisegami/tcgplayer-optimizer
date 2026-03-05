@@ -82,29 +82,46 @@ export default defineEventHandler(async () => {
             const printing = row.printing
             const card = row.card
 
-            if (!acc[seller.id]) {
-                acc[seller.id] = {
+            if (!seller || !listing || !printing || !card) return acc
+
+            const sellerId = seller.id
+            const cardId = card.id
+            const printingId = printing.id
+            const listingId = listing.id
+
+            if (!acc[sellerId]) {
+                acc[sellerId] = {
                     seller,
                     cards: {},
                 }
             }
 
-            if (!acc[seller.id].cards[card.id]) {
-                acc[seller.id].cards[card.id] = {
+            const sellerData = acc[sellerId]
+            if (!sellerData) return acc
+
+            if (!sellerData.cards[cardId]) {
+                sellerData.cards[cardId] = {
                     card,
                     printings: {},
                 }
             }
 
-            if (!acc[seller.id].cards[card.id].printings[printing.id]) {
-                acc[seller.id].cards[card.id].printings[printing.id] = {
+            const cardData = sellerData.cards[cardId]
+            if (!cardData) return acc
+
+            if (!cardData.printings[printingId]) {
+                cardData.printings[printingId] = {
                     printing,
                     listings: {},
                 }
             }
 
-            if (!acc[seller.id].cards[card.id].printings[printing.id].listings[listing.id])
-                acc[seller.id].cards[card.id].printings[printing.id].listings[listing.id] = listing
+            const printingData = cardData.printings[printingId]
+            if (!printingData) return acc
+
+            if (!printingData.listings[listingId]) {
+                printingData.listings[listingId] = listing
+            }
 
             return acc
         },

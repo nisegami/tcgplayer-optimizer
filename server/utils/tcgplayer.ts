@@ -182,7 +182,11 @@ async function getTCGPlayerListingsForProduct(productId: number, quantity: numbe
     const response = await throttledFetch(url, options)
     const data = await response.json()
     const result = await tcgplayerListingResponseSchema.parseAsync(data)
-    const listings = result.results[0].results
+    const firstResult = result.results[0]
+    if (!firstResult) {
+        throw new Error('No results returned from TCGPlayer API')
+    }
+    const listings = firstResult.results
     return listings
 }
 
@@ -235,6 +239,9 @@ async function getAndUpdateSellerMap(listings: TCGPlayerListing[]) {
             }
 
             const [result] = await drizzle.insert(sellers).values(newSeller).returning()
+            if (!result) {
+                throw new Error('Failed to insert seller')
+            }
             sellerMap[sellerKey] = result
         }
     }
@@ -242,8 +249,12 @@ async function getAndUpdateSellerMap(listings: TCGPlayerListing[]) {
     return sellerMap
 }
 
-async function getOrInsertCard(details: TCGPlayerDetails) {
-    const [cardName] = details.productName.split(' (')
+async function getOrInsertCard(details: TCGPlayerDetails): Promise<Card> {
+    const cardNameParts = details.productName.split(' (')
+    const cardName = cardNameParts[0]
+    if (!cardName) {
+        throw new Error('Invalid card name in product details')
+    }
 
     const [existingCard] = await drizzle
         .select()
@@ -261,11 +272,15 @@ async function getOrInsertCard(details: TCGPlayerDetails) {
             })
             .returning()
 
+        if (!newCard) {
+            throw new Error('Failed to insert card')
+        }
+
         return newCard
     }
 }
 
-async function getOrInsertPrinting(card: Card, details: TCGPlayerDetails) {
+async function getOrInsertPrinting(card: Card, details: TCGPlayerDetails): Promise<Printing> {
     const itemNo = details.productId
 
     const [existingPrinting] = await drizzle
@@ -295,6 +310,10 @@ async function getOrInsertPrinting(card: Card, details: TCGPlayerDetails) {
             })
             .returning()
 
+        if (!newPrinting) {
+            throw new Error('Failed to insert printing')
+        }
+
         return newPrinting
     }
 }
@@ -313,7 +332,11 @@ async function storeListingsForPrinting(productListings: TCGPlayerListing[], sel
         const condition = productListing.condition
         const edition = productListing.printing
         const printingId = printing.id
-        const sellerId = sellerMap[productListing.sellerKey].id
+        const seller = sellerMap[productListing.sellerKey]
+        if (!seller) {
+            throw new Error(`Seller not found in map: ${productListing.sellerKey}`)
+        }
+        const sellerId = seller.id
 
         const newListing = {
             price,
@@ -477,6 +500,10 @@ async function calculateGoodDealPrice(
         const sortedPrices = allPrices.sort((a, b) => a - b)
         const percentileIndex = Math.floor(sortedPrices.length * 0.25)
         const goodDealPrice = sortedPrices[percentileIndex]
+
+        if (goodDealPrice === undefined) {
+            return null
+        }
 
         // console.log(`[calculateGoodDealPrice] All prices (${allPrices.length}): [${sortedPrices.join(', ')}]`)
         // console.log(`[calculateGoodDealPrice] 25th percentile index: ${percentileIndex}, good deal price: ${goodDealPrice}`)

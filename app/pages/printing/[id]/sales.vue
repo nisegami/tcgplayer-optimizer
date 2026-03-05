@@ -15,12 +15,12 @@ interface HistoryRow {
 const { data: response, isLoading, suspense } = useQuery({
     queryKey: ['printing', 'sales', printingId],
     queryFn: async () => {
-        return await $fetch(`/api/printings/sales/${printingId}`)
+        return await $fetch(`/api/printings/sales/${printingId}`) as any
     },
 })
 
 const data = computed(() => {
-    return response.value?.sales.flatMap(sale =>
+    return response.value?.sales.flatMap((sale: any) =>
         ({
             orderDate: formatDate(sale.orderDate),
             condition: sale.condition,
