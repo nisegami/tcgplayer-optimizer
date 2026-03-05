@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, isNull, ne, or } from 'drizzle-orm'
 
 function sortCards({ card: a }: { card: Card }, { card: b }: { card: Card }) {
     const nameA = a.name.toUpperCase()
@@ -22,6 +22,7 @@ export default defineEventHandler(async () => {
         })
         .from(cards)
         .leftJoin(printings, eq(cards.id, printings.cardId))
+        .where(or(isNull(printings.priority), ne(printings.priority, 'ARCHIVED')))
 
     const reduced = rows.reduce<Record<number, { card: Card, printings: Printing[] }>>(
         (acc, row) => {

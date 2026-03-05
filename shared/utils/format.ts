@@ -21,6 +21,7 @@ export function getPriorityColor(priority: Priority | string): string {
         case 'ENABLED': return 'text-primary'
         case 'PRIORITY': return 'text-warning'
         case 'FORCE': return 'text-danger'
+        case 'ARCHIVED': return 'text-gray-500'
         default: return ''
     }
 }

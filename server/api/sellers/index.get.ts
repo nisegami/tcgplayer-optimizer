@@ -1,7 +1,7 @@
 import { eq, not } from 'drizzle-orm'
 
 function scoreListings(printing: Printing, listings: Listing[]): number {
-    if (printing.priority === 'HIDE' || printing.priority === 'DISABLED')
+    if (printing.priority === 'HIDE' || printing.priority === 'DISABLED' || printing.priority === 'ARCHIVED')
         return 0
     return Math.min(listings.reduce((acc, listing) => acc + listing.quantity, 0), printing.desiredQuantity)
 }
@@ -41,7 +41,7 @@ function test(printing: Printing, listing: Listing): boolean {
     if (printing.priority === 'FORCE')
         return true
 
-    if (printing.priority === 'DISABLED' || printing.priority === 'HIDE')
+    if (printing.priority === 'DISABLED' || printing.priority === 'HIDE' || printing.priority === 'ARCHIVED')
         return false
 
     if (printing.maxPrice && listing.price > printing.maxPrice)
